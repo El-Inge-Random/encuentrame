@@ -1,0 +1,7 @@
+{
+  "task_id": "task-admin-panel",
+  "task_description": "Add a complete /admin panel to the Encuentrame Next.js project: middleware role-guard, server actions, admin layout with sidebar, dashboard metrics, businesses CRUD table, users table with role change, and categories read-only list.",
+  "status": "completed",
+  "feature_order": ["FEAT-001", "FEAT-002"],
+  "blocked_reason": null
+}

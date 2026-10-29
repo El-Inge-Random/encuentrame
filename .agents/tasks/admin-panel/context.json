@@ -1,0 +1,27 @@
+{
+  "project_type": "Next.js 16 (App Router) + Supabase SSR + TypeScript + Tailwind CSS 4 + shadcn/ui",
+  "language": "TypeScript (strict: true)",
+  "build_system": "Next.js 16.4.2 — build command is `npm run build`. No turbopack in prod. tsconfig paths: @/* → ./src/*. Next.js 15+ async params: searchParams and params props in page components must be typed as Promise<T> and awaited.",
+  "test_framework": "None configured — verification is via `npm run build` passing without TypeScript or ESLint errors.",
+  "build_command": "npm run build",
+  "test_command": "npm run build",
+  "verification_instructions": "Run `npm run build` inside the workspace root c:\\Users\\Alanis\\Documents\\apps ideas\\encuentrameTB. The build must complete with 0 TypeScript errors and 0 ESLint errors. Check that all new /admin routes appear in the route manifest printed by Next.js.",
+  "snapshot_or_generated_files": null,
+  "environment_constraints": "Windows PowerShell. `npm run build` requires NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY env vars set in .env.local (already present). Do NOT restart the dev server.",
+  "contribution_requirements": "All UI text in Spanish. Use `export const instant = false` (not `dynamic = 'force-dynamic'`) in every server page/layout. All server actions must have `'use server'` at the top. Client components that call server actions must have `'use client'` at the top.",
+  "key_patterns": "1) Server Supabase client: `const supabase = await createClient()` from '@/lib/supabase/server'. 2) Auth check pattern: `const { data: { user } } = await supabase.auth.getUser()` then `if (!user) redirect('/auth/login')`. 3) Profile/role check: `await supabase.from('profiles').select('role').eq('id', user.id).single()` then check `profile?.role === 'admin'`. 4) Server actions return `{ error: string }` on failure, call `revalidatePath()` then nothing (or `redirect()`) on success. 5) shadcn/ui Badge variants: default, secondary, destructive, outline. 6) signOut imported from '@/app/actions/auth'. 7) Business type in '@/types' has is_active: boolean, is_verified: boolean, owner_id: string. Profile type has role: 'user'|'owner'|'admin'. 8) Middleware: src/middleware.ts calls updateSession from src/lib/supabase/middleware.ts — admin guard must be added IN src/lib/supabase/middleware.ts alongside the existing /dashboard guard (not in src/middleware.ts directly, to keep the pattern consistent) OR added directly in src/middleware.ts after calling updateSession.",
+  "relevant_files": [
+    "src/middleware.ts",
+    "src/lib/supabase/middleware.ts",
+    "src/app/dashboard/layout.tsx",
+    "src/app/dashboard/page.tsx",
+    "src/app/actions/business.ts",
+    "src/app/actions/auth.ts",
+    "src/types/index.ts",
+    "src/lib/supabase/server.ts",
+    "src/components/ui/badge.tsx",
+    "src/components/ui/card.tsx",
+    "src/components/ui/button.tsx"
+  ],
+  "directory_structure": "src/app/ — Next.js App Router pages. src/app/actions/ — server actions files. src/app/dashboard/ — owner panel (pattern to follow). src/components/ui/ — shadcn/ui components. src/lib/supabase/ — client/server/middleware helpers. src/types/index.ts — shared TypeScript types. .agents/tasks/admin-panel/ — FEAT artifacts (outside worktree commits)."
+}
