@@ -1,27 +1,18 @@
 import Link from 'next/link'
-import { getBusinesses, getCategories } from './actions/business'
+import { getBusinesses, getCategories, getCities } from './actions/business'
 import BusinessGrid from '@/components/business/BusinessGrid'
 import SearchBar from '@/components/search/SearchBar'
-import { UtensilsCrossed, Scissors, Heart, ShoppingBag, Wrench, BookOpen, Music, Home } from 'lucide-react'
+import CitySearchBar from '@/components/search/CitySearchBar'
+import CategoryIcon from '@/components/business/CategoryIcon'
 import type { Category } from '@/types'
 
 export const dynamic = 'force-dynamic'
 
-const ICONS: Record<string, React.ReactNode> = {
-  UtensilsCrossed: <UtensilsCrossed className="w-7 h-7" />,
-  Scissors: <Scissors className="w-7 h-7" />,
-  Heart: <Heart className="w-7 h-7" />,
-  ShoppingBag: <ShoppingBag className="w-7 h-7" />,
-  Wrench: <Wrench className="w-7 h-7" />,
-  BookOpen: <BookOpen className="w-7 h-7" />,
-  Music: <Music className="w-7 h-7" />,
-  Home: <Home className="w-7 h-7" />,
-}
-
 export default async function HomePage() {
-  const [categories, recentBusinesses] = await Promise.all([
+  const [categories, recentBusinesses, cities] = await Promise.all([
     getCategories(),
     getBusinesses(),
+    getCities(),
   ])
 
   return (
@@ -31,8 +22,9 @@ export default async function HomePage() {
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-4">Encuentrame</h1>
           <p className="text-xl md:text-2xl text-purple-100 mb-8">Descubre los negocios de Tierra Blanca</p>
-          <div className="flex justify-center">
+          <div className="flex flex-col items-center gap-3">
             <SearchBar large />
+            <CitySearchBar cities={cities} large />
           </div>
         </div>
       </section>
@@ -51,7 +43,7 @@ export default async function HomePage() {
                 className="w-14 h-14 rounded-xl flex items-center justify-center text-white"
                 style={{ backgroundColor: cat.color || '#7C3AED' }}
               >
-                {cat.icon && ICONS[cat.icon]}
+                {cat.icon && <CategoryIcon name={cat.icon} />}
               </div>
               <span className="text-sm font-medium text-gray-700 group-hover:text-purple-700 transition-colors">{cat.name}</span>
             </Link>

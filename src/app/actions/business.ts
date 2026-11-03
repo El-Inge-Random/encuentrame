@@ -6,7 +6,7 @@ import { redirect } from 'next/navigation'
 import { slugify } from '@/lib/utils/business'
 import type { Business } from '@/types'
 
-export async function getBusinesses({ category, search }: { category?: string; search?: string } = {}) {
+export async function getBusinesses({ category, search, city }: { category?: string; search?: string; city?: string } = {}) {
   const supabase = await createClient()
   let query = supabase
     .from('businesses')
@@ -17,6 +17,10 @@ export async function getBusinesses({ category, search }: { category?: string; s
   if (category) {
     const { data: cat } = await supabase.from('categories').select('id').eq('slug', category).single()
     if (cat) query = query.eq('category_id', cat.id)
+  }
+
+  if (city) {
+    query = query.ilike('city', city)
   }
 
   const { data, error } = await query
@@ -139,4 +143,12 @@ export async function getCategories() {
   const supabase = await createClient()
   const { data } = await supabase.from('categories').select('*').order('name')
   return data || []
+}
+
+export async function getCities(): Promise<string[]> {
+  const supabase = await createClient()
+  const { data } = await supabase.from('businesses').select('city').eq('is_active', true)
+  return [...new Set((data ?? []).map((r) => r.city as string))]
+    .filter((c) => Boolean(c?.trim()))
+    .sort((a, b) => a.localeCompare(b))
 }
