@@ -20,6 +20,11 @@ export async function getBusinesses({ category, search, city }: { category?: str
   }
 
   if (city) {
+    // `city` is always the exact DB string chosen from getCities() (the
+    // accent-insensitive autocomplete only guides that choice), so both
+    // sides of the ilike carry matching accents. Unlike the in-memory
+    // `search` pass below, this DB-level ilike does NOT strip accents, so a
+    // hand-built accent-stripped ?ciudad= URL would return zero results.
     query = query.ilike('city', city)
   }
 
