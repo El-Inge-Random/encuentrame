@@ -44,17 +44,27 @@ export async function getBusinesses({ category, search, city }: { category?: str
 
     const fuzzyMatch = (field: string): boolean => {
       const normalizedField = normalize(field)
-      // 1. El campo contiene el término exacto: "barberia" includes "barberia"
+      // 1. El campo contiene el término exacto: "barberia" incluye "barber"
       if (normalizedField.includes(normalizedSearch)) return true
-      // 2. El término contiene el campo (búsqueda más larga que el nombre)
-      if (normalizedSearch.includes(normalizedField)) return true
-      // 3. Coincidencia por palabras: cada palabra del término debe aparecer
-      //    como prefijo de alguna palabra del campo
-      //    "barberias" -> busca palabras del campo que empiecen con "barberia"
+
+      // 2. Coincidencia por palabras: CADA palabra del término debe coincidir
+      //    con alguna palabra del campo por prefijo compartido. Para evitar
+      //    falsos positivos, ambas palabras deben tener al menos 3 caracteres
+      //    y compartir un prefijo de al menos 3 caracteres.
+      //    Ej: "barberias" coincide con "barberia" (comparten "barberia");
+      //    "oxxo" NO coincide con "av", "o", "col", etc. (prefijo < 3 chars).
+      const sharesPrefix = (a: string, b: string) => {
+        if (a.length < 3 || b.length < 3) return false
+        const min = Math.min(a.length, b.length)
+        let i = 0
+        while (i < min && a[i] === b[i]) i++
+        return i >= 3
+      }
+
       const searchWords = normalizedSearch.split(/\s+/).filter(Boolean)
       const fieldWords = normalizedField.split(/\s+/).filter(Boolean)
       return searchWords.every(sw =>
-        fieldWords.some(fw => fw.startsWith(sw) || sw.startsWith(fw))
+        fieldWords.some(fw => sharesPrefix(sw, fw))
       )
     }
 
@@ -89,7 +99,7 @@ export async function getOwnerBusiness() {
     .from('businesses')
     .select('*, categories(*), business_hours(*)')
     .eq('owner_id', user.id)
-    .single()
+    .maybeSingle()
   return data as Business | null
 }
 
@@ -110,6 +120,9 @@ export async function createBusiness(formData: FormData) {
     address: formData.get('address') as string,
     phone: formData.get('phone') as string,
     whatsapp: formData.get('whatsapp') as string,
+    city: (formData.get('city') as string)?.trim() || 'Tierra Blanca',
+    state: (formData.get('state') as string)?.trim() || 'Veracruz',
+    cover_image: (formData.get('cover_image') as string)?.trim() || null,
   }
 
   const { error } = await supabase.from('businesses').insert(payload)
@@ -133,6 +146,9 @@ export async function updateBusiness(id: string, formData: FormData) {
     address: formData.get('address') as string,
     phone: formData.get('phone') as string,
     whatsapp: formData.get('whatsapp') as string,
+    city: (formData.get('city') as string)?.trim() || 'Tierra Blanca',
+    state: (formData.get('state') as string)?.trim() || 'Veracruz',
+    cover_image: (formData.get('cover_image') as string)?.trim() || null,
     updated_at: new Date().toISOString(),
   }
 
@@ -156,4 +172,20 @@ export async function getCities(): Promise<string[]> {
   return [...new Set((data ?? []).map((r) => r.city as string))]
     .filter((c) => Boolean(c?.trim()))
     .sort((a, b) => a.localeCompare(b))
+}
+
+export async function getCitiesWithCount(): Promise<{ city: string; count: number }[]> {
+  const supabase = await createClient()
+  const { data } = await supabase.from('businesses').select('city').eq('is_active', true)
+
+  const counts = new Map<string, number>()
+  for (const row of data ?? []) {
+    const city = (row.city as string)?.trim()
+    if (!city) continue
+    counts.set(city, (counts.get(city) ?? 0) + 1)
+  }
+
+  return [...counts.entries()]
+    .map(([city, count]) => ({ city, count }))
+    .sort((a, b) => a.city.localeCompare(b.city))
 }
