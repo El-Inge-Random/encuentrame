@@ -34,6 +34,7 @@ export async function getAdminStats(): Promise<AdminStats | { error: string }> {
     { count: verifiedBusinesses },
     { count: totalUsers },
     { count: pendingVerification },
+    { count: pendingApproval },
     { data: categoryRows },
   ] = await Promise.all([
     supabase.from('businesses').select('*', { count: 'exact', head: true }),
@@ -41,6 +42,7 @@ export async function getAdminStats(): Promise<AdminStats | { error: string }> {
     supabase.from('businesses').select('*', { count: 'exact', head: true }).eq('is_verified', true),
     supabase.from('profiles').select('*', { count: 'exact', head: true }),
     supabase.from('businesses').select('*', { count: 'exact', head: true }).eq('is_verified', false),
+    supabase.from('businesses').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
     supabase.from('categories').select('name, businesses(count)'),
   ])
 
@@ -58,6 +60,7 @@ export async function getAdminStats(): Promise<AdminStats | { error: string }> {
     verifiedBusinesses: verifiedBusinesses ?? 0,
     totalUsers: totalUsers ?? 0,
     pendingVerification: pendingVerification ?? 0,
+    pendingApproval: pendingApproval ?? 0,
     businessesPerCategory,
   }
 }
@@ -68,7 +71,7 @@ export async function getAllBusinesses(): Promise<BusinessWithOwner[] | { error:
 
   const { data, error: queryError } = await supabase
     .from('businesses')
-    .select('*, categories(name, icon, color)')
+    .select('*, categories(name, icon, color), profiles(full_name)')
     .order('created_at', { ascending: false })
 
   if (queryError) return { error: queryError.message }
@@ -128,6 +131,40 @@ export async function toggleBusinessVerified(id: string): Promise<void | { error
 
   if (updateError) return { error: updateError.message }
   revalidatePath('/admin/negocios')
+}
+
+export async function approveBusiness(id: string): Promise<void | { error: string }> {
+  const { supabase, error } = await getAdminUser()
+  if (error || !supabase) return { error: 'No autorizado' }
+
+  const { error: updateError } = await supabase
+    .from('businesses')
+    .update({ status: 'approved' })
+    .eq('id', id)
+
+  if (updateError) return { error: updateError.message }
+  revalidatePath('/admin/negocios')
+  revalidatePath('/admin')
+  // Refresca las vistas públicas que ahora pueden mostrar el negocio.
+  revalidatePath('/')
+  revalidatePath('/buscar')
+}
+
+export async function rejectBusiness(id: string): Promise<void | { error: string }> {
+  const { supabase, error } = await getAdminUser()
+  if (error || !supabase) return { error: 'No autorizado' }
+
+  const { error: updateError } = await supabase
+    .from('businesses')
+    .update({ status: 'rejected' })
+    .eq('id', id)
+
+  if (updateError) return { error: updateError.message }
+  revalidatePath('/admin/negocios')
+  revalidatePath('/admin')
+  // El público deja de verlo; refrescar sus vistas.
+  revalidatePath('/')
+  revalidatePath('/buscar')
 }
 
 export async function changeUserRole(

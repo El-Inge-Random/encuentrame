@@ -13,11 +13,14 @@ export async function addBusinessPhoto(businessId: string, url: string) {
   // El negocio debe pertenecer al usuario autenticado.
   const { data: business } = await supabase
     .from('businesses')
-    .select('id')
+    .select('id, status')
     .eq('id', businessId)
     .eq('owner_id', user.id)
     .maybeSingle()
   if (!business) return { error: 'No autorizado' }
+  if (business.status !== 'approved') {
+    return { error: 'Tu negocio aún no ha sido aprobado.' }
+  }
 
   // El límite de 6 es la fuente de verdad en el servidor.
   const { count } = await supabase
@@ -53,11 +56,14 @@ export async function deleteBusinessPhoto(photoId: string) {
 
   const { data: business } = await supabase
     .from('businesses')
-    .select('id')
+    .select('id, status')
     .eq('id', photo.business_id)
     .eq('owner_id', user.id)
     .maybeSingle()
   if (!business) return { error: 'No autorizado' }
+  if (business.status !== 'approved') {
+    return { error: 'Tu negocio aún no ha sido aprobado.' }
+  }
 
   const { error } = await supabase.from('photos').delete().eq('id', photoId)
   if (error) return { error: error.message }

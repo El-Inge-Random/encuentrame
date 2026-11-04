@@ -1,8 +1,15 @@
 import Link from 'next/link'
 import { getOwnerBusiness } from '@/app/actions/business'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { Store, Clock, Eye } from 'lucide-react'
 import OpenBadge from '@/components/business/OpenBadge'
+
+const STATUS_BADGE = {
+  pending: { label: 'En revisión', className: 'bg-yellow-100 text-yellow-800' },
+  approved: { label: 'Aprobado', className: 'bg-green-100 text-green-800' },
+  rejected: { label: 'Rechazado', className: 'bg-red-100 text-red-800' },
+} as const
 
 export const dynamic = 'force-dynamic'
 
@@ -22,22 +29,45 @@ export default async function DashboardPage() {
     )
   }
 
+  const isApproved = business.status === 'approved'
+  const statusBadge = STATUS_BADGE[business.status]
+
   return (
     <div className="max-w-2xl mx-auto">
       <h1 className="text-2xl font-bold text-gray-900 mb-6">Resumen</h1>
       <div className="bg-white rounded-2xl shadow-sm p-6 mb-4">
         <div className="flex items-start justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900">{business.name}</h2>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h2 className="text-xl font-semibold text-gray-900">{business.name}</h2>
+              <Badge className={statusBadge.className}>{statusBadge.label}</Badge>
+            </div>
             {business.categories && <p className="text-orange-500 text-sm">{business.categories.name}</p>}
             {business.address && <p className="text-gray-500 text-sm mt-1">{business.address}</p>}
           </div>
-          {business.business_hours && <OpenBadge hours={business.business_hours} />}
+          {isApproved && business.business_hours && <OpenBadge hours={business.business_hours} />}
         </div>
+
+        {business.status === 'pending' && (
+          <p className="mt-4 rounded-lg bg-yellow-50 border border-yellow-200 p-3 text-sm text-yellow-800">
+            Tu negocio está en revisión. Te avisaremos cuando sea aprobado. Podrás
+            editar tus datos, horarios y fotos una vez aprobado.
+          </p>
+        )}
+        {business.status === 'rejected' && (
+          <p className="mt-4 rounded-lg bg-red-50 border border-red-200 p-3 text-sm text-red-800">
+            Tu registro fue rechazado. Contáctanos para más información.
+          </p>
+        )}
+
         <div className="flex flex-wrap gap-3 mt-6">
-          <Link href="/dashboard/negocio"><Button variant="outline" className="gap-2"><Store className="w-4 h-4" /> Editar negocio</Button></Link>
-          <Link href="/dashboard/horarios"><Button variant="outline" className="gap-2"><Clock className="w-4 h-4" /> Editar horarios</Button></Link>
-          <Link href={`/negocio/${business.slug}`} target="_blank"><Button variant="ghost" className="gap-2"><Eye className="w-4 h-4" /> Ver perfil público</Button></Link>
+          <Link href="/dashboard/negocio"><Button variant="outline" className="gap-2"><Store className="w-4 h-4" /> {isApproved ? 'Editar negocio' : 'Ver negocio'}</Button></Link>
+          {isApproved && (
+            <>
+              <Link href="/dashboard/horarios"><Button variant="outline" className="gap-2"><Clock className="w-4 h-4" /> Editar horarios</Button></Link>
+              <Link href={`/negocio/${business.slug}`} target="_blank"><Button variant="ghost" className="gap-2"><Eye className="w-4 h-4" /> Ver perfil público</Button></Link>
+            </>
+          )}
         </div>
       </div>
     </div>

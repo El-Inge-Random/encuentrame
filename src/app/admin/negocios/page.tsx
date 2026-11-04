@@ -2,8 +2,26 @@ import { getAllBusinesses } from '@/app/actions/admin'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import ToggleBusinessButton from '@/components/admin/ToggleBusinessButton'
+import ApprovalButtons from '@/components/admin/ApprovalButtons'
 import { format } from 'date-fns'
 import type { BusinessWithOwner } from '@/types'
+
+// Peso de orden: los pendientes de revisión primero, luego rechazados y por
+// último los aprobados (a igualdad, el más reciente arriba).
+const STATUS_WEIGHT: Record<BusinessWithOwner['status'], number> = {
+  pending: 0,
+  rejected: 1,
+  approved: 2,
+}
+
+const STATUS_BADGE: Record<
+  BusinessWithOwner['status'],
+  { label: string; className: string }
+> = {
+  pending: { label: 'En revisión', className: 'bg-yellow-100 text-yellow-800' },
+  approved: { label: 'Aprobado', className: 'bg-green-100 text-green-800' },
+  rejected: { label: 'Rechazado', className: 'bg-red-100 text-red-800' },
+}
 
 export const dynamic = 'force-dynamic'
 
@@ -18,7 +36,11 @@ export default async function AdminNegociosPage() {
     )
   }
 
-  const businesses = result as BusinessWithOwner[]
+  const businesses = [...(result as BusinessWithOwner[])].sort((a, b) => {
+    const weightDiff = STATUS_WEIGHT[a.status] - STATUS_WEIGHT[b.status]
+    if (weightDiff !== 0) return weightDiff
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  })
 
   return (
     <div>
@@ -39,6 +61,7 @@ export default async function AdminNegociosPage() {
                   <th className="text-left px-4 py-3 font-medium text-gray-600">Nombre</th>
                   <th className="text-left px-4 py-3 font-medium text-gray-600">Categoría</th>
                   <th className="text-left px-4 py-3 font-medium text-gray-600">Propietario</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-600">Aprobación</th>
                   <th className="text-left px-4 py-3 font-medium text-gray-600">Estado</th>
                   <th className="text-left px-4 py-3 font-medium text-gray-600">Verificación</th>
                   <th className="text-left px-4 py-3 font-medium text-gray-600">Registro</th>
@@ -48,7 +71,7 @@ export default async function AdminNegociosPage() {
               <tbody>
                 {businesses.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="text-center py-8 text-gray-400">
+                    <td colSpan={8} className="text-center py-8 text-gray-400">
                       No hay negocios registrados.
                     </td>
                   </tr>
@@ -69,6 +92,11 @@ export default async function AdminNegociosPage() {
                       </td>
                       <td className="px-4 py-3 text-gray-600 text-xs">{ownerLabel}</td>
                       <td className="px-4 py-3">
+                        <Badge className={STATUS_BADGE[biz.status].className}>
+                          {STATUS_BADGE[biz.status].label}
+                        </Badge>
+                      </td>
+                      <td className="px-4 py-3">
                         {biz.is_active ? (
                           <Badge className="bg-green-100 text-green-800">Activo</Badge>
                         ) : (
@@ -86,7 +114,8 @@ export default async function AdminNegociosPage() {
                         {format(new Date(biz.created_at), 'dd/MM/yyyy')}
                       </td>
                       <td className="px-4 py-3">
-                        <div className="flex gap-2">
+                        <div className="flex flex-wrap gap-2">
+                          <ApprovalButtons businessId={biz.id} status={biz.status} />
                           <ToggleBusinessButton
                             businessId={biz.id}
                             field="active"

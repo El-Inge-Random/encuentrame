@@ -12,9 +12,17 @@ import type { Business, Category } from '@/types'
 interface BusinessFormProps {
   business: Business | null
   categories: Category[]
+  /**
+   * En modo solo lectura (negocio existente aún no aprobado) se deshabilitan
+   * los campos y el botón de guardar. En creación nunca aplica.
+   */
+  readOnly?: boolean
 }
 
-export default function BusinessForm({ business, categories }: BusinessFormProps) {
+export default function BusinessForm({ business, categories, readOnly = false }: BusinessFormProps) {
+  // La creación de un negocio nuevo siempre está permitida; readOnly solo
+  // aplica cuando ya existe un negocio (edición).
+  const isLocked = readOnly && business !== null
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [file, setFile] = useState<File | null>(null)
@@ -94,7 +102,7 @@ export default function BusinessForm({ business, categories }: BusinessFormProps
     <form action={handleSubmit} className="space-y-5">
       <div>
         <Label htmlFor="name">Nombre del negocio *</Label>
-        <Input id="name" name="name" required className="mt-1" defaultValue={business?.name} />
+        <Input id="name" name="name" required className="mt-1" defaultValue={business?.name} disabled={isLocked} />
       </div>
       <div>
         <Label htmlFor="description">Descripción</Label>
@@ -105,6 +113,7 @@ export default function BusinessForm({ business, categories }: BusinessFormProps
           className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           defaultValue={business?.description || ''}
           placeholder="Describe tu negocio..."
+          disabled={isLocked}
         />
       </div>
       <div>
@@ -120,6 +129,7 @@ export default function BusinessForm({ business, categories }: BusinessFormProps
           type="file"
           accept="image/*"
           onChange={handleFileChange}
+          disabled={isLocked}
           className="mt-2 block w-full text-sm text-gray-600 file:mr-4 file:rounded-md file:border-0 file:bg-purple-50 file:px-3 file:py-2 file:text-sm file:font-medium file:text-purple-700 hover:file:bg-purple-100"
         />
         <p className="mt-1 text-xs text-gray-400">JPG o PNG, máximo 5 MB.</p>
@@ -131,6 +141,7 @@ export default function BusinessForm({ business, categories }: BusinessFormProps
           name="category_id"
           className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
           defaultValue={business?.category_id?.toString() || ''}
+          disabled={isLocked}
         >
           <option value="">Seleccionar categoría</option>
           {categories.map((cat) => (
@@ -140,26 +151,26 @@ export default function BusinessForm({ business, categories }: BusinessFormProps
       </div>
       <div>
         <Label htmlFor="address">Dirección</Label>
-        <Input id="address" name="address" className="mt-1" defaultValue={business?.address || ''} placeholder="Calle, colonia..." />
+        <Input id="address" name="address" className="mt-1" defaultValue={business?.address || ''} placeholder="Calle, colonia..." disabled={isLocked} />
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
           <Label htmlFor="city">Ciudad</Label>
-          <Input id="city" name="city" className="mt-1" defaultValue={business?.city || 'Tierra Blanca'} />
+          <Input id="city" name="city" className="mt-1" defaultValue={business?.city || 'Tierra Blanca'} disabled={isLocked} />
         </div>
         <div>
           <Label htmlFor="state">Estado</Label>
-          <Input id="state" name="state" className="mt-1" defaultValue={business?.state || 'Veracruz'} />
+          <Input id="state" name="state" className="mt-1" defaultValue={business?.state || 'Veracruz'} disabled={isLocked} />
         </div>
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
           <Label htmlFor="phone">Teléfono</Label>
-          <Input id="phone" name="phone" className="mt-1" defaultValue={business?.phone || ''} placeholder="2727..." />
+          <Input id="phone" name="phone" className="mt-1" defaultValue={business?.phone || ''} placeholder="2727..." disabled={isLocked} />
         </div>
         <div>
           <Label htmlFor="whatsapp">WhatsApp (con código país)</Label>
-          <Input id="whatsapp" name="whatsapp" className="mt-1" defaultValue={business?.whatsapp || ''} placeholder="527227..." />
+          <Input id="whatsapp" name="whatsapp" className="mt-1" defaultValue={business?.whatsapp || ''} placeholder="527227..." disabled={isLocked} />
         </div>
       </div>
       {error && (
@@ -167,7 +178,7 @@ export default function BusinessForm({ business, categories }: BusinessFormProps
           {error}
         </p>
       )}
-      <Button type="submit" className="w-full bg-purple-700 hover:bg-purple-800" disabled={loading}>
+      <Button type="submit" className="w-full bg-purple-700 hover:bg-purple-800" disabled={loading || isLocked}>
         {loading ? 'Guardando...' : business ? 'Guardar cambios' : 'Registrar negocio'}
       </Button>
     </form>

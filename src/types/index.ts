@@ -30,6 +30,7 @@ export interface Business {
   cover_image: string | null
   is_active: boolean
   is_verified: boolean
+  status: 'pending' | 'approved' | 'rejected'
   created_at: string
   updated_at: string
   categories?: Category
@@ -59,6 +60,7 @@ export interface AdminStats {
   verifiedBusinesses: number
   totalUsers: number
   pendingVerification: number
+  pendingApproval: number
   businessesPerCategory: { category: string; count: number }[]
 }
 

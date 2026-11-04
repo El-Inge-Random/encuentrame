@@ -12,6 +12,7 @@ export async function getBusinesses({ category, search, city }: { category?: str
     .from('businesses')
     .select('*, categories(*), business_hours(*)')
     .eq('is_active', true)
+    .eq('status', 'approved')
     .order('created_at', { ascending: false })
 
   if (category) {
@@ -81,6 +82,7 @@ export async function getBusinessBySlug(slug: string) {
     .select('*, categories(*), business_hours(*), photos(*)')
     .eq('slug', slug)
     .eq('is_active', true)
+    .eq('status', 'approved')
     .single()
   if (error) return null
   return data as Business & { photos: { id: string; url: string; created_at: string }[] }
@@ -119,6 +121,8 @@ export async function createBusiness(formData: FormData) {
     city: (formData.get('city') as string)?.trim() || 'Tierra Blanca',
     state: (formData.get('state') as string)?.trim() || 'Veracruz',
     cover_image: (formData.get('cover_image') as string)?.trim() || null,
+    // Los negocios nuevos quedan pendientes de aprobación por el admin.
+    status: 'pending' as const,
   }
 
   const { error } = await supabase.from('businesses').insert(payload)
@@ -133,8 +137,22 @@ export async function updateBusiness(id: string, formData: FormData) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'No autenticado' }
 
+  // Defensa en servidor: el dueño solo puede editar si su negocio ya fue
+  // aprobado. Cargamos el estado del negocio (restringido a su propiedad).
+  const { data: existing } = await supabase
+    .from('businesses')
+    .select('status')
+    .eq('id', id)
+    .eq('owner_id', user.id)
+    .maybeSingle()
+  if (!existing) return { error: 'No autorizado' }
+  if (existing.status !== 'approved') {
+    return { error: 'Tu negocio aún no ha sido aprobado.' }
+  }
+
   const name = formData.get('name') as string
 
+  // El dueño nunca toca `status`: no se incluye en el payload del update.
   const payload = {
     name,
     description: formData.get('description') as string,
@@ -164,7 +182,11 @@ export async function getCategories() {
 
 export async function getCities(): Promise<string[]> {
   const supabase = await createClient()
-  const { data } = await supabase.from('businesses').select('city').eq('is_active', true)
+  const { data } = await supabase
+    .from('businesses')
+    .select('city')
+    .eq('is_active', true)
+    .eq('status', 'approved')
   return [...new Set((data ?? []).map((r) => r.city as string))]
     .filter((c) => Boolean(c?.trim()))
     .sort((a, b) => a.localeCompare(b))
@@ -172,7 +194,11 @@ export async function getCities(): Promise<string[]> {
 
 export async function getCitiesWithCount(): Promise<{ city: string; count: number }[]> {
   const supabase = await createClient()
-  const { data } = await supabase.from('businesses').select('city').eq('is_active', true)
+  const { data } = await supabase
+    .from('businesses')
+    .select('city')
+    .eq('is_active', true)
+    .eq('status', 'approved')
 
   const counts = new Map<string, number>()
   for (const row of data ?? []) {

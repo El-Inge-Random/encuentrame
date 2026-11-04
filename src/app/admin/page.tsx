@@ -1,7 +1,7 @@
 import { getAdminStats } from '@/app/actions/admin'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Store, ShieldCheck, Users, Clock, CheckCircle } from 'lucide-react'
+import { Store, ShieldCheck, Users, Clock, CheckCircle, ClipboardCheck } from 'lucide-react'
 import type { AdminStats } from '@/types'
 
 export const dynamic = 'force-dynamic'
@@ -55,6 +55,13 @@ export default async function AdminPage() {
       color: 'text-yellow-600',
       bg: 'bg-yellow-50',
     },
+    {
+      title: 'Pendientes de Aprobación',
+      value: stats.pendingApproval,
+      icon: ClipboardCheck,
+      color: 'text-amber-600',
+      bg: 'bg-amber-50',
+    },
   ]
 
   return (
@@ -62,7 +69,7 @@ export default async function AdminPage() {
       <h1 className="text-2xl font-bold text-gray-900 mb-6">Panel de Administración</h1>
 
       {/* Metric cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
         {metricCards.map(({ title, value, icon: Icon, color, bg }) => (
           <Card key={title}>
             <CardContent className="p-6">
