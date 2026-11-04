@@ -30,10 +30,6 @@ export async function getBusinesses({ category, search, city }: { category?: str
 
   const { data, error } = await query
 
-  console.log('[getBusinesses] search:', search)
-  console.log('[getBusinesses] error:', error)
-  console.log('[getBusinesses] total rows from DB:', data?.length)
-
   if (error) return []
 
   if (search) {
@@ -97,7 +93,7 @@ export async function getOwnerBusiness() {
 
   const { data } = await supabase
     .from('businesses')
-    .select('*, categories(*), business_hours(*)')
+    .select('*, categories(*), business_hours(*), photos(*)')
     .eq('owner_id', user.id)
     .maybeSingle()
   return data as Business | null

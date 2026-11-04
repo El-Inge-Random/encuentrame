@@ -34,6 +34,7 @@ export interface Business {
   updated_at: string
   categories?: Category
   business_hours?: BusinessHours[]
+  photos?: Photo[]
 }
 
 export interface BusinessHours {
