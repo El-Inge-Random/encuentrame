@@ -15,8 +15,8 @@ const geist = Geist({
 })
 
 export const metadata: Metadata = {
-  title: 'Encuentrame - Tierra Blanca, Veracruz',
-  description: 'Descubre los negocios locales de Tierra Blanca, Veracruz',
+  title: 'Encuentrame - Directorio de negocios locales',
+  description: 'Descubre y encuentra los negocios locales de tu zona',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

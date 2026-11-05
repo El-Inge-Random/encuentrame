@@ -24,7 +24,7 @@ export interface Business {
   phone: string | null
   whatsapp: string | null
   city: string
-  state: string
+  state: string | null
   lat: number | null
   lng: number | null
   cover_image: string | null

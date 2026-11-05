@@ -63,7 +63,8 @@ export default async function BusinessPage({ params }: BusinessPageProps) {
 
           {business.address && (
             <p className="mt-4 text-gray-500 flex items-center gap-2 text-sm">
-              <MapPin className="w-4 h-4 text-purple-700" /> {business.address}, {business.city}, {business.state}
+              <MapPin className="w-4 h-4 text-purple-700" />{' '}
+              {[business.address, business.city, business.state].filter(Boolean).join(', ')}
             </p>
           )}
         </div>

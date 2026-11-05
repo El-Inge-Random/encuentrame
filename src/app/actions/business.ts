@@ -110,6 +110,9 @@ export async function createBusiness(formData: FormData) {
   const name = formData.get('name') as string
   const slug = slugify(name)
 
+  const city = (formData.get('city') as string)?.trim()
+  if (!city) return { error: 'La ciudad es obligatoria.' }
+
   const payload = {
     owner_id: user.id,
     name,
@@ -119,8 +122,8 @@ export async function createBusiness(formData: FormData) {
     address: formData.get('address') as string,
     phone: formData.get('phone') as string,
     whatsapp: formData.get('whatsapp') as string,
-    city: (formData.get('city') as string)?.trim() || 'Tierra Blanca',
-    state: (formData.get('state') as string)?.trim() || 'Veracruz',
+    city,
+    state: (formData.get('state') as string)?.trim() || null,
     cover_image: (formData.get('cover_image') as string)?.trim() || null,
     // Los negocios nuevos quedan pendientes de aprobación por el admin.
     status: 'pending' as const,
@@ -154,6 +157,9 @@ export async function updateBusiness(id: string, formData: FormData) {
 
   const name = formData.get('name') as string
 
+  const city = (formData.get('city') as string)?.trim()
+  if (!city) return { error: 'La ciudad es obligatoria.' }
+
   // El dueño nunca toca `status`: no se incluye en el payload del update.
   const payload = {
     name,
@@ -162,8 +168,8 @@ export async function updateBusiness(id: string, formData: FormData) {
     address: formData.get('address') as string,
     phone: formData.get('phone') as string,
     whatsapp: formData.get('whatsapp') as string,
-    city: (formData.get('city') as string)?.trim() || 'Tierra Blanca',
-    state: (formData.get('state') as string)?.trim() || 'Veracruz',
+    city,
+    state: (formData.get('state') as string)?.trim() || null,
     cover_image: (formData.get('cover_image') as string)?.trim() || null,
     updated_at: new Date().toISOString(),
   }

@@ -155,12 +155,12 @@ export default function BusinessForm({ business, categories, readOnly = false }:
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="city">Ciudad</Label>
-          <Input id="city" name="city" className="mt-1" defaultValue={business?.city || 'Tierra Blanca'} disabled={isLocked} />
+          <Label htmlFor="city">Ciudad *</Label>
+          <Input id="city" name="city" required className="mt-1" defaultValue={business?.city || ''} placeholder="Ej. Tierra Blanca" disabled={isLocked} />
         </div>
         <div>
           <Label htmlFor="state">Estado</Label>
-          <Input id="state" name="state" className="mt-1" defaultValue={business?.state || 'Veracruz'} disabled={isLocked} />
+          <Input id="state" name="state" className="mt-1" defaultValue={business?.state || ''} placeholder="Ej. Veracruz" disabled={isLocked} />
         </div>
       </div>
       <div className="grid grid-cols-2 gap-4">

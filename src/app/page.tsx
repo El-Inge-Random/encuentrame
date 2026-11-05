@@ -20,7 +20,7 @@ export default async function HomePage() {
       <section className="bg-gradient-to-br from-purple-700 via-fuchsia-600 to-orange-500 text-white pt-24 pb-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-4">Encuentrame</h1>
-          <p className="text-xl md:text-2xl text-purple-100 mb-8">Descubre los negocios de Tierra Blanca</p>
+          <p className="text-xl md:text-2xl text-purple-100 mb-8">Descubre los negocios cerca de ti</p>
           <div className="flex justify-center">
             <HeroSearch cities={cities} />
           </div>

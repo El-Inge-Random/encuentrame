@@ -14,7 +14,7 @@ export default function Footer() {
               <MapPin className="w-5 h-5 text-orange-500" />
               Encuentrame
             </div>
-            <p className="text-sm">Descubre los negocios de Tierra Blanca, Veracruz.</p>
+            <p className="text-sm">Descubre los negocios cerca de ti.</p>
           </div>
           <div className="flex flex-col gap-1 text-sm">
             <Link href="/buscar" className="hover:text-white transition-colors">Explorar negocios</Link>
@@ -23,7 +23,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="mt-8 pt-6 border-t border-gray-800 text-xs text-center">
-          © <CurrentYear /> Encuentrame · Tierra Blanca, Veracruz
+          © <CurrentYear /> Encuentrame · Directorio de negocios locales
         </div>
       </div>
     </footer>
