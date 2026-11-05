@@ -216,6 +216,8 @@ Auditoría completa en `.agents/tasks/prod-readiness-report.md`. Estado: código
 
 ## Pendientes / trabajo en progreso
 1. **Objetos huérfanos en Storage** — al borrar/reemplazar portada o foto de galería, el archivo viejo queda en el bucket `business-images`. Se podría borrar también del storage.
+2. **Definir paleta de colores oficial** — DECISIÓN PENDIENTE con el usuario. Hoy se usa morado (#7C3AED / purple-700) + naranja (#F97316 / orange-500) + fuchsia como intermedio en degradados. Falta definir una paleta formal (primarios, secundarios, estados) y aplicarla de forma consistente. Afecta: landing, navbar, botones, badges, PWA (theme_color/background_color del manifest e íconos). Al definirla, revisar también los tokens de `globals.css`.
+3. **PWA (en progreso)** — convertir la app en instalable (manifest, íconos, service worker). Se arranca con el estilo actual (degradado morado-naranja + pin). Si la paleta cambia (punto 2), regenerar íconos y theme colors.
 
 (Descartados por decisión del usuario: preview embebido del perfil en el dashboard —ya hay botón "Ver perfil público"—, y recorte automático de imágenes.)
 
