@@ -79,7 +79,9 @@ export default async function AdminNegociosPage() {
                 {businesses.map((biz) => {
                   const ownerLabel = biz.profiles?.full_name
                     ? biz.profiles.full_name
-                    : `${biz.owner_id.substring(0, 8)}...`
+                    : biz.owner_id
+                      ? `${biz.owner_id.substring(0, 8)}...`
+                      : 'Sin dueño (demo)'
 
                   const category =
                     biz.categories as { name?: string } | undefined
@@ -115,7 +117,11 @@ export default async function AdminNegociosPage() {
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex flex-wrap gap-2">
-                          <ApprovalButtons businessId={biz.id} status={biz.status} />
+                          <ApprovalButtons
+                            businessId={biz.id}
+                            status={biz.status}
+                            rejectionReason={biz.rejection_reason}
+                          />
                           <ToggleBusinessButton
                             businessId={biz.id}
                             field="active"

@@ -1,6 +1,7 @@
 import { getOwnerBusiness, getCategories } from '@/app/actions/business'
 import BusinessForm from '@/components/business/BusinessForm'
 import BusinessGallery from '@/components/business/BusinessGallery'
+import ResubmitButton from '@/components/business/ResubmitButton'
 import type { Category } from '@/types'
 
 export const dynamic = 'force-dynamic'
@@ -14,6 +15,8 @@ export default async function NegocioPage() {
   const isApproved = business?.status === 'approved'
   const isPending = business?.status === 'pending'
   const isRejected = business?.status === 'rejected'
+  // El dueño puede editar cuando está aprobado o rechazado; 'pending' es solo lectura.
+  const canEdit = isApproved || isRejected
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -29,7 +32,14 @@ export default async function NegocioPage() {
       )}
       {isRejected && (
         <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
-          Tu registro fue rechazado. Contáctanos para más información.
+          <p>
+            Tu negocio fue rechazado.
+            {business?.rejection_reason ? ` Motivo: ${business.rejection_reason}.` : ''} Corrige
+            los datos y vuelve a solicitar la aprobación.
+          </p>
+          <div className="mt-3">
+            <ResubmitButton />
+          </div>
         </div>
       )}
 
@@ -37,7 +47,7 @@ export default async function NegocioPage() {
         <BusinessForm
           business={business}
           categories={categories as Category[]}
-          readOnly={business ? !isApproved : false}
+          readOnly={business ? !canEdit : false}
         />
       </div>
 
@@ -45,7 +55,7 @@ export default async function NegocioPage() {
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Fotos del negocio</h2>
         {!business ? (
           <p className="text-sm text-gray-500">Guarda tu negocio para poder agregar fotos.</p>
-        ) : isApproved ? (
+        ) : canEdit ? (
           <BusinessGallery businessId={business.id} photos={business.photos ?? []} />
         ) : (
           <p className="text-sm text-gray-500">

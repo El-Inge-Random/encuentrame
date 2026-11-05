@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Store, Clock, Eye } from 'lucide-react'
 import OpenBadge from '@/components/business/OpenBadge'
+import ResubmitButton from '@/components/business/ResubmitButton'
 
 const STATUS_BADGE = {
   pending: { label: 'En revisión', className: 'bg-yellow-100 text-yellow-800' },
@@ -30,6 +31,9 @@ export default async function DashboardPage() {
   }
 
   const isApproved = business.status === 'approved'
+  const isRejected = business.status === 'rejected'
+  // El dueño puede editar su negocio/horarios cuando está aprobado o rechazado.
+  const canEdit = isApproved || isRejected
   const statusBadge = STATUS_BADGE[business.status]
 
   return (
@@ -54,19 +58,26 @@ export default async function DashboardPage() {
             editar tus datos, horarios y fotos una vez aprobado.
           </p>
         )}
-        {business.status === 'rejected' && (
-          <p className="mt-4 rounded-lg bg-red-50 border border-red-200 p-3 text-sm text-red-800">
-            Tu registro fue rechazado. Contáctanos para más información.
-          </p>
+        {isRejected && (
+          <div className="mt-4 rounded-lg bg-red-50 border border-red-200 p-3 text-sm text-red-800">
+            <p>
+              Tu negocio fue rechazado.
+              {business.rejection_reason ? ` Motivo: ${business.rejection_reason}.` : ''} Corrige
+              los datos y vuelve a solicitar la aprobación.
+            </p>
+            <div className="mt-3">
+              <ResubmitButton />
+            </div>
+          </div>
         )}
 
         <div className="flex flex-wrap gap-3 mt-6">
-          <Link href="/dashboard/negocio"><Button variant="outline" className="gap-2"><Store className="w-4 h-4" /> {isApproved ? 'Editar negocio' : 'Ver negocio'}</Button></Link>
+          <Link href="/dashboard/negocio"><Button variant="outline" className="gap-2"><Store className="w-4 h-4" /> {canEdit ? 'Editar negocio' : 'Ver negocio'}</Button></Link>
+          {canEdit && (
+            <Link href="/dashboard/horarios"><Button variant="outline" className="gap-2"><Clock className="w-4 h-4" /> Editar horarios</Button></Link>
+          )}
           {isApproved && (
-            <>
-              <Link href="/dashboard/horarios"><Button variant="outline" className="gap-2"><Clock className="w-4 h-4" /> Editar horarios</Button></Link>
-              <Link href={`/negocio/${business.slug}`} target="_blank"><Button variant="ghost" className="gap-2"><Eye className="w-4 h-4" /> Ver perfil público</Button></Link>
-            </>
+            <Link href={`/negocio/${business.slug}`} target="_blank"><Button variant="ghost" className="gap-2"><Eye className="w-4 h-4" /> Ver perfil público</Button></Link>
           )}
         </div>
       </div>

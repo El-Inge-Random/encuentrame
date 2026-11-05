@@ -44,24 +44,25 @@ export async function getBusinesses({ category, search, city }: { category?: str
       // 1. El campo contiene el término exacto: "barberia" incluye "barber"
       if (normalizedField.includes(normalizedSearch)) return true
 
-      // 2. Coincidencia por palabras: CADA palabra del término debe coincidir
-      //    con alguna palabra del campo por prefijo compartido. Para evitar
-      //    falsos positivos, ambas palabras deben tener al menos 3 caracteres
-      //    y compartir un prefijo de al menos 3 caracteres.
-      //    Ej: "barberias" coincide con "barberia" (comparten "barberia");
-      //    "oxxo" NO coincide con "av", "o", "col", etc. (prefijo < 3 chars).
-      const sharesPrefix = (a: string, b: string) => {
+      // 2. Coincidencia por palabras: CADA palabra buscada debe coincidir con
+      //    alguna palabra del campo. Para que coincidan, una palabra debe ser
+      //    PREFIJO de la otra (p.ej. "barberia" es prefijo de "barberias"), y
+      //    la diferencia de longitud entre ambas debe ser pequeña (<= 2 chars)
+      //    para tolerar plurales/variantes sin crear falsos positivos.
+      //    Ej: "barberia" ↔ "barberias" (dif 1) SÍ coincide.
+      //        "barberia" vs "barbacoa": ninguna es prefijo de la otra → NO.
+      //        "oxxo" vs palabras cortas de direcciones → NO.
+      const wordsMatch = (a: string, b: string) => {
         if (a.length < 3 || b.length < 3) return false
-        const min = Math.min(a.length, b.length)
-        let i = 0
-        while (i < min && a[i] === b[i]) i++
-        return i >= 3
+        const [shorter, longer] = a.length <= b.length ? [a, b] : [b, a]
+        if (!longer.startsWith(shorter)) return false
+        return longer.length - shorter.length <= 2
       }
 
       const searchWords = normalizedSearch.split(/\s+/).filter(Boolean)
       const fieldWords = normalizedField.split(/\s+/).filter(Boolean)
       return searchWords.every(sw =>
-        fieldWords.some(fw => sharesPrefix(sw, fw))
+        fieldWords.some(fw => wordsMatch(sw, fw))
       )
     }
 
@@ -137,8 +138,9 @@ export async function updateBusiness(id: string, formData: FormData) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'No autenticado' }
 
-  // Defensa en servidor: el dueño solo puede editar si su negocio ya fue
-  // aprobado. Cargamos el estado del negocio (restringido a su propiedad).
+  // Defensa en servidor: el dueño puede editar cuando su negocio está
+  // aprobado o rechazado (para corregir y volver a solicitar). Solo el
+  // estado 'pending' (en revisión) queda en solo lectura.
   const { data: existing } = await supabase
     .from('businesses')
     .select('status')
@@ -146,8 +148,8 @@ export async function updateBusiness(id: string, formData: FormData) {
     .eq('owner_id', user.id)
     .maybeSingle()
   if (!existing) return { error: 'No autorizado' }
-  if (existing.status !== 'approved') {
-    return { error: 'Tu negocio aún no ha sido aprobado.' }
+  if (existing.status === 'pending') {
+    return { error: 'Tu negocio está en revisión y no puede editarse.' }
   }
 
   const name = formData.get('name') as string
@@ -172,6 +174,37 @@ export async function updateBusiness(id: string, formData: FormData) {
   revalidatePath('/dashboard')
   revalidatePath('/dashboard/negocio')
   redirect('/dashboard')
+}
+
+export async function resubmitBusiness(): Promise<{ error: string } | { success: true }> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'No autenticado' }
+
+  // Solo se puede volver a solicitar aprobación si el negocio del dueño
+  // fue rechazado. Leemos su estado (restringido a su propiedad).
+  const { data: business } = await supabase
+    .from('businesses')
+    .select('id, status')
+    .eq('owner_id', user.id)
+    .maybeSingle()
+  if (!business) return { error: 'No autorizado' }
+  if (business.status !== 'rejected') {
+    return { error: 'Solo puedes volver a solicitar aprobación si tu negocio fue rechazado.' }
+  }
+
+  // Regresa a 'pending' y limpia el motivo. La transición rejected -> pending
+  // del dueño está permitida por el trigger prevent_status_change_by_owner.
+  const { error } = await supabase
+    .from('businesses')
+    .update({ status: 'pending', rejection_reason: null })
+    .eq('id', business.id)
+    .eq('owner_id', user.id)
+  if (error) return { error: error.message }
+
+  revalidatePath('/dashboard')
+  revalidatePath('/dashboard/negocio')
+  return { success: true }
 }
 
 export async function getCategories() {

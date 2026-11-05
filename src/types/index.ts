@@ -31,6 +31,7 @@ export interface Business {
   is_active: boolean
   is_verified: boolean
   status: 'pending' | 'approved' | 'rejected'
+  rejection_reason: string | null
   created_at: string
   updated_at: string
   categories?: Category

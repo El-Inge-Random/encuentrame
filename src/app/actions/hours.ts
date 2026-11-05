@@ -9,8 +9,9 @@ export async function saveBusinessHours(businessId: string, hours: Omit<Business
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'No autenticado' }
 
-  // Defensa en servidor: el negocio debe pertenecer al usuario y estar
-  // aprobado antes de poder gestionar sus horarios.
+  // Defensa en servidor: el negocio debe pertenecer al usuario. Se pueden
+  // gestionar horarios cuando está aprobado o rechazado; solo 'pending'
+  // (en revisión) queda bloqueado.
   const { data: business } = await supabase
     .from('businesses')
     .select('status')
@@ -18,8 +19,8 @@ export async function saveBusinessHours(businessId: string, hours: Omit<Business
     .eq('owner_id', user.id)
     .maybeSingle()
   if (!business) return { error: 'No autorizado' }
-  if (business.status !== 'approved') {
-    return { error: 'Tu negocio aún no ha sido aprobado.' }
+  if (business.status === 'pending') {
+    return { error: 'Tu negocio está en revisión y no puede editarse.' }
   }
 
   await supabase.from('business_hours').delete().eq('business_id', businessId)

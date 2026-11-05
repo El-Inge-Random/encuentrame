@@ -137,9 +137,10 @@ export async function approveBusiness(id: string): Promise<void | { error: strin
   const { supabase, error } = await getAdminUser()
   if (error || !supabase) return { error: 'No autorizado' }
 
+  // Al aprobar se limpia el motivo de rechazo previo (si lo había).
   const { error: updateError } = await supabase
     .from('businesses')
-    .update({ status: 'approved' })
+    .update({ status: 'approved', rejection_reason: null })
     .eq('id', id)
 
   if (updateError) return { error: updateError.message }
@@ -150,13 +151,17 @@ export async function approveBusiness(id: string): Promise<void | { error: strin
   revalidatePath('/buscar')
 }
 
-export async function rejectBusiness(id: string): Promise<void | { error: string }> {
+export async function rejectBusiness(id: string, reason: string): Promise<void | { error: string }> {
   const { supabase, error } = await getAdminUser()
   if (error || !supabase) return { error: 'No autorizado' }
 
+  // El admin debe indicar por qué se rechaza; el dueño verá este motivo.
+  const trimmedReason = reason?.trim()
+  if (!trimmedReason) return { error: 'Debes indicar un motivo de rechazo.' }
+
   const { error: updateError } = await supabase
     .from('businesses')
-    .update({ status: 'rejected' })
+    .update({ status: 'rejected', rejection_reason: trimmedReason })
     .eq('id', id)
 
   if (updateError) return { error: updateError.message }

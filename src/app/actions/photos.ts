@@ -18,8 +18,8 @@ export async function addBusinessPhoto(businessId: string, url: string) {
     .eq('owner_id', user.id)
     .maybeSingle()
   if (!business) return { error: 'No autorizado' }
-  if (business.status !== 'approved') {
-    return { error: 'Tu negocio aún no ha sido aprobado.' }
+  if (business.status === 'pending') {
+    return { error: 'Tu negocio está en revisión y no puede editarse.' }
   }
 
   // El límite de 6 es la fuente de verdad en el servidor.
@@ -61,8 +61,8 @@ export async function deleteBusinessPhoto(photoId: string) {
     .eq('owner_id', user.id)
     .maybeSingle()
   if (!business) return { error: 'No autorizado' }
-  if (business.status !== 'approved') {
-    return { error: 'Tu negocio aún no ha sido aprobado.' }
+  if (business.status === 'pending') {
+    return { error: 'Tu negocio está en revisión y no puede editarse.' }
   }
 
   const { error } = await supabase.from('photos').delete().eq('id', photoId)

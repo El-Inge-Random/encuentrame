@@ -17,6 +17,7 @@ const DEFAULT_HOURS = Array.from({ length: 7 }, (_, i) => ({
 export default function HorariosPage() {
   const [businessId, setBusinessId] = useState<string | null>(null)
   const [status, setStatus] = useState<'pending' | 'approved' | 'rejected' | null>(null)
+  const [rejectionReason, setRejectionReason] = useState<string | null>(null)
   const [hours, setHours] = useState(DEFAULT_HOURS)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -29,6 +30,7 @@ export default function HorariosPage() {
         if (data.business) {
           setBusinessId(data.business.id)
           setStatus(data.business.status ?? null)
+          setRejectionReason(data.business.rejection_reason ?? null)
           if (data.business.business_hours?.length > 0) {
             const merged = DEFAULT_HOURS.map(def => {
               const found = data.business.business_hours.find((h: BusinessHours) => h.day_of_week === def.day_of_week)
@@ -56,21 +58,16 @@ export default function HorariosPage() {
 
   if (loading) return <div className="text-center py-20 text-gray-400">Cargando...</div>
 
-  // El negocio existe pero aún no está aprobado: no se pueden editar horarios.
-  if (businessId && status !== 'approved') {
+  // El negocio existe pero está en revisión ('pending'): solo lectura.
+  // Cuando está aprobado o rechazado, los horarios SÍ se pueden gestionar.
+  if (businessId && status === 'pending') {
     return (
       <div className="max-w-2xl mx-auto">
         <h1 className="text-2xl font-bold text-gray-900 mb-6">Gestionar horarios</h1>
         <div className="bg-white rounded-2xl shadow-sm p-6">
-          {status === 'rejected' ? (
-            <p className="rounded-lg bg-red-50 border border-red-200 p-4 text-sm text-red-800">
-              Tu registro fue rechazado. Contáctanos para más información.
-            </p>
-          ) : (
-            <p className="rounded-lg bg-yellow-50 border border-yellow-200 p-4 text-sm text-yellow-800">
-              Tu negocio está en revisión. Podrás gestionar tus horarios cuando sea aprobado.
-            </p>
-          )}
+          <p className="rounded-lg bg-yellow-50 border border-yellow-200 p-4 text-sm text-yellow-800">
+            Tu negocio está en revisión. Podrás gestionar tus horarios cuando sea aprobado.
+          </p>
         </div>
       </div>
     )
@@ -79,6 +76,13 @@ export default function HorariosPage() {
   return (
     <div className="max-w-2xl mx-auto">
       <h1 className="text-2xl font-bold text-gray-900 mb-6">Gestionar horarios</h1>
+      {status === 'rejected' && (
+        <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+          Tu negocio fue rechazado.
+          {rejectionReason ? ` Motivo: ${rejectionReason}.` : ''} Corrige los datos
+          y vuelve a solicitar la aprobación desde tu panel.
+        </div>
+      )}
       <div className="bg-white rounded-2xl shadow-sm p-6">
         <div className="space-y-4">
           {hours.map(h => (
