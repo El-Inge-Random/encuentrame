@@ -3,6 +3,7 @@ import { getBusinesses, getCategories, getCitiesWithCount } from './actions/busi
 import BusinessGrid from '@/components/business/BusinessGrid'
 import HeroSearch from '@/components/search/HeroSearch'
 import CategoryIcon from '@/components/business/CategoryIcon'
+import AboutSection from '@/components/layout/AboutSection'
 import type { Category } from '@/types'
 
 export const dynamic = 'force-dynamic'
@@ -49,8 +50,11 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Qué es Encuentrame */}
+      <AboutSection />
+
       {/* Recent businesses */}
-      <section className="max-w-6xl mx-auto px-4 pb-20">
+      <section className="max-w-6xl mx-auto px-4 py-20">
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-2xl font-bold text-gray-900">Negocios registrados</h2>
           <Link href="/buscar" className="text-sm text-purple-700 hover:underline font-medium">Ver todos →</Link>

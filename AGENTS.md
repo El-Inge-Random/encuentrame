@@ -107,9 +107,21 @@ create policy "Fotos visibles" on photos for select using (true);
 ### Motivo de rechazo + re-solicitud: `supabase/rejection_reason.sql` (columna `rejection_reason` + reescritura del trigger para permitir SOLO la transición dueño `rejected`→`pending`).
 ### FIX escalada admin vía INSERT: `supabase/fix_role_escalation_insert.sql` (trigger `prevent_role_change` ahora cubre INSERT+UPDATE; policy de INSERT en profiles solo acepta user/owner). BLOQUEANTE de seguridad resuelto.
 ### Storage acotado a carpeta del dueño: `supabase/storage_scope_folder.sql` (insert/update/delete solo en `{uid}/...`; lectura pública intacta).
+### Recomendaciones (referidos): `supabase/referrals.sql` (columnas `referred_by` en profiles y businesses).
+### Promoción user→owner: `supabase/allow_user_to_owner.sql` (reescribe `prevent_role_change` para permitir SOLO la transición del propio usuario user→owner al crear negocio; sigue bloqueando llegar a admin).
+### Alta de categorías por admin: `supabase/categories_admin_insert.sql` (policy INSERT en categories con `public.is_admin()`).
 
 ### ORDEN de ejecución de los SQL en Supabase (base desde cero)
-1. `migrations/001_initial.sql` → 2. `seed.sql` (opcional) → 3. `policies.sql` → 4. `secure_role.sql` → 5. `storage.sql` → 6. `approval.sql` → 7. `approval_policies.sql` → 8. `fix_admin_recursion.sql` → 9. `rejection_reason.sql` → 10. `fix_role_escalation_insert.sql` → 11. `storage_scope_folder.sql`
+1. `migrations/001_initial.sql` → 2. `seed.sql` (opcional) → 3. `policies.sql` → 4. `secure_role.sql` → 5. `storage.sql` → 6. `approval.sql` → 7. `approval_policies.sql` → 8. `fix_admin_recursion.sql` → 9. `rejection_reason.sql` → 10. `fix_role_escalation_insert.sql` → 11. `storage_scope_folder.sql` → 12. `referrals.sql` → 13. `allow_user_to_owner.sql` → 14. `categories_admin_insert.sql`
+
+## Features recientes (esta tanda)
+- Sección "¿Qué es Encuentrame?" en landing (`components/layout/AboutSection.tsx`) con CTA a /recomendar.
+- Recomendaciones: página `/recomendar` (copiar enlace + WhatsApp), enlace `?ref=recomendado`, tracking que hereda `referred_by` del perfil al negocio, tarjeta "Por Recomendación" en /admin.
+- Al crear negocio: se garantiza el perfil (evita FK), se hereda `referred_by`, y si el perfil era `user` se promueve a `owner`.
+- Subida de imagen: el archivo NO viaja al server action (se sube al Storage desde el cliente y solo se manda la URL) — evita el límite de 1MB de Server Actions.
+- Alta de categorías desde /admin/categorias (`CreateCategoryForm` + `createCategory`), íconos en `components/business/categoryIcons.ts` (fuente única, 24 íconos).
+- Ubicación generalizada (sin "Tierra Blanca" fijo): ciudad obligatoria, estado opcional.
+- Confirmación de email DESACTIVADA en Supabase (decisión para pruebas; revisar antes de abrir registro masivo).
 
 ## Flujo de aprobación de negocios (status)
 - `businesses.status`: `pending` | `approved` | `rejected` (default `pending`). Columna `rejection_reason` para el motivo que escribe el admin.

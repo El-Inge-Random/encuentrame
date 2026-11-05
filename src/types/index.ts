@@ -2,6 +2,7 @@ export interface Profile {
   id: string
   full_name: string | null
   role: 'user' | 'owner' | 'admin'
+  referred_by: string | null
   created_at: string
 }
 
@@ -32,6 +33,7 @@ export interface Business {
   is_verified: boolean
   status: 'pending' | 'approved' | 'rejected'
   rejection_reason: string | null
+  referred_by: string | null
   created_at: string
   updated_at: string
   categories?: Category
@@ -62,6 +64,7 @@ export interface AdminStats {
   totalUsers: number
   pendingVerification: number
   pendingApproval: number
+  recommendedBusinesses: number
   businessesPerCategory: { category: string; count: number }[]
 }
 

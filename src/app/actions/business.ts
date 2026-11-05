@@ -113,10 +113,30 @@ export async function createBusiness(formData: FormData) {
   const city = (formData.get('city') as string)?.trim()
   if (!city) return { error: 'La ciudad es obligatoria.' }
 
+  // Garantiza que exista el perfil del usuario antes de crear el negocio.
+  // businesses.owner_id tiene FK a profiles(id); si el perfil no se creó en
+  // el registro (p.ej. cuentas antiguas o signUp con confirmación de email),
+  // el insert del negocio fallaría con businesses_owner_id_fkey.
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('referred_by')
+    .eq('id', user.id)
+    .maybeSingle()
+
+  if (!profile) {
+    const { error: profileError } = await supabase.from('profiles').insert({
+      id: user.id,
+      full_name: (user.user_metadata?.full_name as string) ?? null,
+      role: 'owner',
+    })
+    if (profileError) return { error: profileError.message }
+  }
+
   const payload = {
     owner_id: user.id,
     name,
     slug,
+    referred_by: profile?.referred_by ?? null,
     description: formData.get('description') as string,
     category_id: formData.get('category_id') ? Number(formData.get('category_id')) : null,
     address: formData.get('address') as string,
@@ -131,6 +151,15 @@ export async function createBusiness(formData: FormData) {
 
   const { error } = await supabase.from('businesses').insert(payload)
   if (error) return { error: error.message }
+
+  // Quien registra un negocio pasa a ser dueño: si el perfil era 'user', lo
+  // promovemos a 'owner' para que el rol refleje la realidad. (El trigger de
+  // seguridad permite SOLO esta transición user->owner desde el cliente.)
+  await supabase
+    .from('profiles')
+    .update({ role: 'owner' })
+    .eq('id', user.id)
+    .eq('role', 'user')
 
   revalidatePath('/dashboard')
   redirect('/dashboard')

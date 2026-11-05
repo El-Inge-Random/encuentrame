@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { slugify } from '@/lib/utils/business'
 import type { AdminStats, BusinessWithOwner, Profile } from '@/types'
 
 async function getAdminUser() {
@@ -35,6 +36,7 @@ export async function getAdminStats(): Promise<AdminStats | { error: string }> {
     { count: totalUsers },
     { count: pendingVerification },
     { count: pendingApproval },
+    { count: recommendedBusinesses },
     { data: categoryRows },
   ] = await Promise.all([
     supabase.from('businesses').select('*', { count: 'exact', head: true }),
@@ -43,6 +45,7 @@ export async function getAdminStats(): Promise<AdminStats | { error: string }> {
     supabase.from('profiles').select('*', { count: 'exact', head: true }),
     supabase.from('businesses').select('*', { count: 'exact', head: true }).eq('is_verified', false),
     supabase.from('businesses').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
+    supabase.from('businesses').select('*', { count: 'exact', head: true }).eq('referred_by', 'recomendado'),
     supabase.from('categories').select('name, businesses(count)'),
   ])
 
@@ -61,6 +64,7 @@ export async function getAdminStats(): Promise<AdminStats | { error: string }> {
     totalUsers: totalUsers ?? 0,
     pendingVerification: pendingVerification ?? 0,
     pendingApproval: pendingApproval ?? 0,
+    recommendedBusinesses: recommendedBusinesses ?? 0,
     businessesPerCategory,
   }
 }
@@ -219,4 +223,35 @@ export async function getCategoriesWithCount(): Promise<
       count,
     }
   })
+}
+
+export async function createCategory(formData: FormData): Promise<void | { error: string }> {
+  const { supabase, error } = await getAdminUser()
+  if (error || !supabase) return { error: 'No autorizado' }
+
+  const name = (formData.get('name') as string)?.trim()
+  if (!name) return { error: 'El nombre es obligatorio.' }
+
+  const icon = (formData.get('icon') as string)?.trim() || null
+  const color = (formData.get('color') as string)?.trim() || null
+  const slug = slugify(name)
+  if (!slug) return { error: 'El nombre no es válido.' }
+
+  // Evita duplicados por slug (la columna es unique; damos un mensaje claro
+  // en vez de dejar que reviente la restricción).
+  const { data: existing } = await supabase
+    .from('categories')
+    .select('id')
+    .eq('slug', slug)
+    .maybeSingle()
+  if (existing) return { error: 'Ya existe una categoría con ese nombre.' }
+
+  const { error: insertError } = await supabase
+    .from('categories')
+    .insert({ name, slug, icon, color })
+
+  if (insertError) return { error: insertError.message }
+
+  revalidatePath('/admin/categorias')
+  revalidatePath('/')
 }

@@ -17,6 +17,9 @@ export default function RegisterPage() {
     setLoading(true)
     setError('')
     formData.set('role', role)
+    // Captura el parámetro ?ref= del enlace de recomendación (si lo hay).
+    const ref = new URLSearchParams(window.location.search).get('ref')
+    if (ref) formData.set('ref', ref)
     const result = await signUp(formData)
     if (result?.error) {
       setError(result.error)

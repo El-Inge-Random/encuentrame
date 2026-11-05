@@ -1,6 +1,7 @@
 import { getCategoriesWithCount } from '@/app/actions/admin'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import CreateCategoryForm from '@/components/admin/CreateCategoryForm'
 
 export const dynamic = 'force-dynamic'
 
@@ -23,6 +24,10 @@ export default async function AdminCategoriasPage() {
         Categorías{' '}
         <span className="text-gray-400 text-lg font-normal">({categories.length})</span>
       </h1>
+
+      <div className="mb-6">
+        <CreateCategoryForm />
+      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {categories.length === 0 && (

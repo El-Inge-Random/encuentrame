@@ -1,7 +1,7 @@
 import { getAdminStats } from '@/app/actions/admin'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Store, ShieldCheck, Users, Clock, CheckCircle, ClipboardCheck } from 'lucide-react'
+import { Store, ShieldCheck, Users, Clock, CheckCircle, ClipboardCheck, Share2 } from 'lucide-react'
 import type { AdminStats } from '@/types'
 
 export const dynamic = 'force-dynamic'
@@ -61,6 +61,13 @@ export default async function AdminPage() {
       icon: ClipboardCheck,
       color: 'text-amber-600',
       bg: 'bg-amber-50',
+    },
+    {
+      title: 'Por Recomendación',
+      value: stats.recommendedBusinesses,
+      icon: Share2,
+      color: 'text-pink-600',
+      bg: 'bg-pink-50',
     },
   ]
 

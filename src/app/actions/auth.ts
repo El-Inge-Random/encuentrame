@@ -22,6 +22,10 @@ export async function signUp(formData: FormData) {
   const password = formData.get('password') as string
   const full_name = formData.get('full_name') as string
   const role = formData.get('role') as string
+  // Si el registro vino desde un enlace de recomendación (?ref=recomendado),
+  // se guarda en el perfil para luego heredarlo al negocio que cree el dueño.
+  const refRaw = (formData.get('ref') as string)?.trim()
+  const referred_by = refRaw === 'recomendado' ? 'recomendado' : null
 
   const { data, error } = await supabase.auth.signUp({ email, password })
   if (error) return { error: error.message }
@@ -31,6 +35,7 @@ export async function signUp(formData: FormData) {
       id: data.user.id,
       full_name,
       role: role === 'owner' ? 'owner' : 'user',
+      referred_by,
     })
   }
 

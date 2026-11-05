@@ -19,6 +19,7 @@ export default function Footer() {
           <div className="flex flex-col gap-1 text-sm">
             <Link href="/buscar" className="hover:text-white transition-colors">Explorar negocios</Link>
             <Link href="/auth/registro" className="hover:text-white transition-colors">Registra tu negocio</Link>
+            <Link href="/recomendar" className="hover:text-white transition-colors">Recomienda un negocio</Link>
             <Link href="/auth/login" className="hover:text-white transition-colors">Iniciar sesión</Link>
           </div>
         </div>

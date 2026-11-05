@@ -54,7 +54,7 @@ export default function BusinessForm({ business, categories, readOnly = false }:
     setPreview(URL.createObjectURL(f))
   }
 
-  async function handleSubmit(formData: FormData) {
+  async function handleSubmit(rawFormData: FormData) {
     setLoading(true)
     setError('')
 
@@ -85,13 +85,23 @@ export default function BusinessForm({ business, categories, readOnly = false }:
       coverImageUrl = pub.publicUrl
     }
 
-    formData.set('cover_image', coverImageUrl ?? '')
+    // IMPORTANTE: construimos un FormData SOLO con campos de texto. El input
+    // de archivo (cover_image_file) NO debe viajar al server action, o el body
+    // excede el límite de 1 MB de Server Actions. El archivo ya se subió al
+    // Storage arriba; aquí solo mandamos su URL.
+    const payload = new FormData()
+    for (const key of ['name', 'description', 'category_id', 'address', 'city', 'state', 'phone', 'whatsapp']) {
+      payload.set(key, (rawFormData.get(key) as string) ?? '')
+    }
+    payload.set('cover_image', coverImageUrl ?? '')
+    const ref = rawFormData.get('ref')
+    if (ref) payload.set('ref', ref as string)
 
     // createBusiness/updateBusiness redirigen en caso de éxito; si regresan
     // un objeto es porque hubo un error que debemos mostrar.
     const result = business
-      ? await updateBusiness(business.id, formData)
-      : await createBusiness(formData)
+      ? await updateBusiness(business.id, payload)
+      : await createBusiness(payload)
     if (result?.error) {
       setError(result.error)
       setLoading(false)
