@@ -44,3 +44,23 @@ export async function signOut() {
   revalidatePath('/', 'layout')
   redirect('/')
 }
+
+export async function requestPasswordReset(formData: FormData) {
+  const supabase = await createClient()
+  const email = formData.get('email') as string
+
+  const { headers } = await import('next/headers')
+  const h = await headers()
+  const origin =
+    h.get('origin') ??
+    (h.get('host') ? `https://${h.get('host')}` : process.env.NEXT_PUBLIC_SITE_URL ?? '')
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${origin}/auth/callback?next=/auth/actualizar-password`,
+  })
+
+  if (error) return { error: error.message }
+  return { success: true }
+}
+
+

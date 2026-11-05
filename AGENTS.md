@@ -101,6 +101,24 @@ create policy "Fotos visibles" on photos for select using (true);
 ### Migration inicial: `supabase/migrations/001_initial.sql`
 ### Políticas RLS completas: `supabase/policies.sql` (SELECT público + dueño gestiona SU negocio/horarios/fotos + perfiles privados)
 ### Seguridad de rol: `supabase/secure_role.sql` (trigger que impide auto-promoverse a admin desde el cliente)
+### Storage (bucket business-images): `supabase/storage.sql`
+### Aprobación de negocios: `supabase/approval.sql` (columna `status`) + `supabase/approval_policies.sql` (RLS público approved + policies admin + trigger `prevent_status_change_by_owner`).
+### Fix recursión RLS admin: `supabase/fix_admin_recursion.sql` (función `public.is_admin()` SECURITY DEFINER — las policies admin la usan en vez de consultar `profiles` dentro de una policy de `profiles`, que causaba recursión y rebotaba al admin de /admin).
+### Motivo de rechazo + re-solicitud: `supabase/rejection_reason.sql` (columna `rejection_reason` + reescritura del trigger para permitir SOLO la transición dueño `rejected`→`pending`).
+### FIX escalada admin vía INSERT: `supabase/fix_role_escalation_insert.sql` (trigger `prevent_role_change` ahora cubre INSERT+UPDATE; policy de INSERT en profiles solo acepta user/owner). BLOQUEANTE de seguridad resuelto.
+### Storage acotado a carpeta del dueño: `supabase/storage_scope_folder.sql` (insert/update/delete solo en `{uid}/...`; lectura pública intacta).
+
+### ORDEN de ejecución de los SQL en Supabase (base desde cero)
+1. `migrations/001_initial.sql` → 2. `seed.sql` (opcional) → 3. `policies.sql` → 4. `secure_role.sql` → 5. `storage.sql` → 6. `approval.sql` → 7. `approval_policies.sql` → 8. `fix_admin_recursion.sql` → 9. `rejection_reason.sql` → 10. `fix_role_escalation_insert.sql` → 11. `storage_scope_folder.sql`
+
+## Flujo de aprobación de negocios (status)
+- `businesses.status`: `pending` | `approved` | `rejected` (default `pending`). Columna `rejection_reason` para el motivo que escribe el admin.
+- Dueño crea negocio → `pending`. En `pending` NO puede editar negocio/horarios/fotos (solo lectura). En `rejected` y `approved` SÍ puede editar. Bloqueo en server actions + trigger, no solo UI.
+- Admin aprueba/rechaza en `/admin/negocios` (`approveBusiness` limpia el motivo; `rejectBusiness(id, reason)` exige motivo). Botones en `components/admin/ApprovalButtons.tsx`.
+- Dueño rechazado: ve el motivo, corrige datos y usa "Volver a solicitar aprobación" (`resubmitBusiness` en business.ts, `components/business/ResubmitButton.tsx`) → vuelve a `pending` y limpia el motivo.
+- Público (getBusinesses, getBusinessBySlug, getCities, getCitiesWithCount) filtra `status='approved'` AND `is_active=true`.
+- El dueño NO puede cambiar su propio status salvo la transición `rejected`→`pending` (trigger `prevent_status_change_by_owner`, usa `old.owner_id` y `public.is_admin()`).
+- Enlace "Admin" en el navbar solo visible para admins (`NavbarServer` consulta el rol y pasa `isAdmin` a `Navbar`). La protección real sigue en middleware + layout de /admin.
 
 ### RLS — IMPORTANTE
 - RLS está activo en TODAS las tablas. Sin política explícita, la tabla está cerrada (los INSERT/UPDATE fallan silenciosamente si falta la política).
@@ -138,7 +156,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=<la key real está en .env.local, no commitear>
 1. `export const dynamic = 'force-dynamic'` en TODOS los layouts y páginas que usan Supabase auth o fechas
 2. `'use client'` en cualquier componente que use `new Date()`, hooks de React, o eventos
 3. El mapa Leaflet siempre con `dynamic(() => import(...), { ssr: false })`
-4. Búsqueda por texto: se hace en memoria para ignorar acentos. `normalize` usa `.normalize('NFD').replace(/[\u0300-\u036f]/g, '')`. El fuzzy match requiere prefijo compartido de ≥3 chars entre palabras ≥3 chars (evita falsos positivos tipo "oxxo" matcheando direcciones)
+4. Búsqueda por texto: se hace en memoria para ignorar acentos. `normalize` usa `.normalize('NFD').replace(/[\u0300-\u036f]/g, '')`. Coincidencia por palabra: una palabra debe ser PREFIJO real de la otra con diferencia de longitud ≤2 (tolera plurales como barberia/barberias, pero NO falsos positivos: "barberia"≠"barbacoa", "oxxo"≠direcciones). En `/buscar`, seleccionar una categoría LIMPIA el término de texto `q` (categorías = explorar, texto = buscar; no se combinan)
 5. Filtro por ciudad: SÍ usa `.ilike('city', city)` a nivel BD (a diferencia del texto). `getCities()` y `getCitiesWithCount()` devuelven ciudades de negocios activos
 6. Imágenes externas permitidas en next.config.ts: `images.unsplash.com`
 7. lucide-react NO puede importarse en Server Components (usa createContext). Solo en client components. Iconos de categoría vía `components/business/CategoryIcon.tsx`
@@ -167,12 +185,27 @@ const nextConfig = {
 - ✅ Recuperación de contraseña (ver sección arriba).
 - ✅ Registro/edición de negocio: `components/business/BusinessForm.tsx` (client, muestra errores), campos city/state, `getOwnerBusiness` usa `.maybeSingle()`.
 - ✅ Seguridad RLS completa + trigger anti escalada de rol.
+- ✅ Portada (cover_image) y galería de hasta 6 fotos (`BusinessGallery.tsx` + `actions/photos.ts`) con Supabase Storage.
+- ✅ Sistema de aprobación de negocios (status pending/approved/rejected) con bloqueo a nivel servidor.
+- ✅ Re-solicitud de negocios rechazados + motivo de rechazo (ver "Flujo de aprobación" arriba).
+- ✅ Enlace "Admin" en navbar solo para admins + fix de recursión RLS que impedía el acceso admin.
+
+## Checklist de despliegue a PRODUCCIÓN
+Auditoría completa en `.agents/tasks/prod-readiness-report.md`. Estado: código sólido (tsc + build limpios, sin secretos commiteados). Antes de abrir al público:
+- [x] **B1 BLOQUEANTE** escalada a admin vía INSERT → corregido en `fix_role_escalation_insert.sql` (CORRER en Supabase). Verificar que el único admin sea el esperado: `select id, full_name, role from profiles where role='admin';`
+- [x] **I1** `.env.local.example` corregido al nombre `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+- [x] **I3** Storage acotado a la carpeta del dueño → `storage_scope_folder.sql` (CORRER en Supabase).
+- [ ] **I2** En el hosting (Vercel): definir `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` y (recomendado) `NEXT_PUBLIC_SITE_URL`. En Supabase → Auth → URL Configuration → Redirect URLs: agregar `https://<dominio-prod>/auth/callback`.
+- [ ] **I2** SMTP propio en Supabase (el integrado es limitado, no apto para prod).
+- [ ] **I4** Decidir política de confirmación de email. Si se EXIGE confirmación, ajustar `signUp` para mostrar "revisa tu correo" en vez de redirigir a /dashboard (hoy rebota a login sin aviso). Si NO se exige, el flujo actual funciona.
+- [ ] **M1** (no urgente) migrar `middleware.ts`→`proxy.ts` (`npx @next/codemod@canary middleware-to-proxy .`) en una rama; el warning no bloquea.
+- [ ] **M5** commitear los SQL y componentes nuevos para que el repo refleje lo desplegado.
+- Nota: `--webpack` en los scripts es compatible con Vercel (solo builds algo más lentos). `@tailwindcss/turbopack` quedó como dep sobrante, se puede quitar.
 
 ## Pendientes / trabajo en progreso
-1. **Dashboard del dueño** — portada (cover_image) YA hecha. Falta: galería de varias fotos (tabla `photos`), preview del perfil público.
-3. ~~Mobile — menú hamburguesa en /admin~~ ✅ HECHO: `components/admin/AdminNav.tsx` (client) con sidebar desktop + barra/menú móvil; el layout sigue siendo server con la verificación de rol admin.
-4. **Accesibilidad** — los autocompletes de ciudad no tienen ARIA combobox / navegación con teclado (flechas, Escape).
-5. **Email de producción** — la recuperación de contraseña usa el SMTP de Supabase (limitado). Para producción configurar SMTP propio.
+1. **Objetos huérfanos en Storage** — al borrar/reemplazar portada o foto de galería, el archivo viejo queda en el bucket `business-images`. Se podría borrar también del storage.
+
+(Descartados por decisión del usuario: preview embebido del perfil en el dashboard —ya hay botón "Ver perfil público"—, y recorte automático de imágenes.)
 
 ## Errores resueltos (para no repetirlos)
 - `Date.now() while prerendering` → mover a 'use client' o agregar `dynamic = 'force-dynamic'`
@@ -186,3 +219,7 @@ const nextConfig = {
 - lucide-react 1.57.0 sin `.d.ts` (TS7016 en ~20 archivos) → fijar `lucide-react` en `1.67.0` y reinstalar node_modules
 - Registro de negocio "no pasa nada" → faltaban políticas RLS de INSERT/UPDATE; además el form se tragaba el error (ahora `BusinessForm` lo muestra)
 - "Auth session missing!" al cambiar contraseña → flujo PKCE, hay que `exchangeCodeForSession` antes de `updateUser`
+- Admin con role='admin' en BD pero rebotado de /admin → recursión en la policy RLS que leía `profiles` dentro de una policy de `profiles`. Fix: función `public.is_admin()` SECURITY DEFINER (`fix_admin_recursion.sql`)
+- `Cannot read properties of null (reading 'substring')` en /admin/negocios → los 10 negocios demo del seed tienen `owner_id = null`; manejar el caso (muestra "Sin dueño (demo)")
+- Búsqueda con falsos positivos ("oxxo"→barberías, "barberia"→tacos con "barbacoa") → la regla de prefijo compartido era muy laxa; ahora exige prefijo real con dif ≤2 chars
+- Categoría + texto daban 0 resultados confusos → al elegir categoría se limpia `q` (y el SearchBar se remonta con `key={q}`)

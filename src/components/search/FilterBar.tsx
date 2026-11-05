@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Clock, MapPin, X } from 'lucide-react'
 import type { Category } from '@/types'
+import { useCityCombobox } from './useCityCombobox'
 
 interface FilterBarProps {
   categories: Category[]
@@ -16,33 +16,39 @@ interface FilterBarProps {
 export default function FilterBar({ categories, selectedCategory, openNow, cities, selectedCity }: FilterBarProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [cityInput, setCityInput] = useState('')
-  const [open, setOpen] = useState(false)
-  const wrapperRef = useRef<HTMLDivElement>(null)
 
   const updateFilter = (key: string, value: string | null) => {
     const params = new URLSearchParams(searchParams.toString())
     if (value) params.set(key, value)
     else params.delete(key)
+    // Al navegar por categoría, se limpia el término de texto: las categorías
+    // son para explorar, la barra de texto para buscar. Combinarlos solía dar
+    // 0 resultados confusos (p.ej. "Barbería" + categoría "Entretenimiento").
+    if (key === 'categoria') params.delete('q')
     router.push(`/buscar?${params.toString()}`)
   }
 
-  const normalize = (str: string) =>
-    str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  const {
+    query: cityInput,
+    setQuery: setCityInput,
+    open,
+    setOpen,
+    activeIndex,
+    setActiveIndex,
+    suggestions,
+    wrapperRef,
+    select,
+    onKeyDown,
+  } = useCityCombobox<string>({
+    items: cities,
+    getLabel: (c) => c,
+    onSelect: (city) => {
+      updateFilter('ciudad', city)
+      setCityInput('')
+    },
+  })
 
-  const suggestions = cityInput.trim()
-    ? cities.filter((c) => normalize(c).includes(normalize(cityInput.trim())))
-    : []
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
-        setOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+  const listboxId = 'filterbar-city-listbox'
 
   return (
     <div className="flex flex-wrap gap-2 items-center">
@@ -79,21 +85,41 @@ export default function FilterBar({ categories, selectedCategory, openNow, citie
           <MapPin className="w-3 h-3 text-gray-500" />
           <input
             type="text"
+            role="combobox"
+            aria-expanded={open && suggestions.length > 0}
+            aria-controls={listboxId}
+            aria-autocomplete="list"
+            aria-activedescendant={
+              open && activeIndex >= 0 ? `${listboxId}-option-${activeIndex}` : undefined
+            }
             value={cityInput}
             onChange={(e) => { setCityInput(e.target.value); setOpen(true) }}
             onFocus={() => setOpen(true)}
+            onKeyDown={onKeyDown}
             placeholder="Buscar ciudad"
+            aria-label="Buscar por ciudad"
             className="bg-transparent outline-none text-sm text-gray-700 w-32 placeholder:text-gray-400"
           />
         </div>
         {open && suggestions.length > 0 && (
-          <ul className="absolute z-10 mt-1 w-56 rounded-lg bg-white border shadow-lg max-h-60 overflow-auto">
-            {suggestions.map((city) => (
-              <li key={city}>
+          <ul
+            id={listboxId}
+            role="listbox"
+            aria-label="Ciudades"
+            className="absolute z-10 mt-1 w-56 rounded-lg bg-white border shadow-lg max-h-60 overflow-auto"
+          >
+            {suggestions.map((city, i) => (
+              <li key={city} role="none">
                 <button
                   type="button"
-                  onClick={() => { updateFilter('ciudad', city); setCityInput(''); setOpen(false) }}
-                  className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  id={`${listboxId}-option-${i}`}
+                  role="option"
+                  aria-selected={i === activeIndex}
+                  onClick={() => select(city)}
+                  onMouseEnter={() => setActiveIndex(i)}
+                  className={`w-full text-left px-3 py-2 text-sm text-gray-700 ${
+                    i === activeIndex ? 'bg-purple-50' : 'hover:bg-gray-100'
+                  }`}
                 >
                   {city}
                 </button>

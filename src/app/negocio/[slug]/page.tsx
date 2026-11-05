@@ -20,12 +20,20 @@ export default async function BusinessPage({ params }: BusinessPageProps) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="relative h-72 bg-gradient-to-br from-purple-100 to-orange-100">
-        {business.cover_image ? (
-          <Image src={business.cover_image} alt={business.name} fill className="object-cover" />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-8xl">🏪</div>
-        )}
+      <div className="max-w-4xl mx-auto px-4 pt-6">
+        <div className="relative h-56 md:h-64 w-full overflow-hidden rounded-2xl bg-gradient-to-br from-purple-100 to-orange-100">
+          {business.cover_image ? (
+            <Image
+              src={business.cover_image}
+              alt={business.name}
+              fill
+              sizes="(max-width: 896px) 100vw, 896px"
+              className="object-cover"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-8xl">🏪</div>
+          )}
+        </div>
       </div>
 
       <div className="max-w-4xl mx-auto px-4 -mt-8 relative z-10">

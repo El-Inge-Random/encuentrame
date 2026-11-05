@@ -1,8 +1,7 @@
 import Link from 'next/link'
-import { getBusinesses, getCategories, getCities } from './actions/business'
+import { getBusinesses, getCategories, getCitiesWithCount } from './actions/business'
 import BusinessGrid from '@/components/business/BusinessGrid'
-import SearchBar from '@/components/search/SearchBar'
-import CitySearchBar from '@/components/search/CitySearchBar'
+import HeroSearch from '@/components/search/HeroSearch'
 import CategoryIcon from '@/components/business/CategoryIcon'
 import type { Category } from '@/types'
 
@@ -12,19 +11,18 @@ export default async function HomePage() {
   const [categories, recentBusinesses, cities] = await Promise.all([
     getCategories(),
     getBusinesses(),
-    getCities(),
+    getCitiesWithCount(),
   ])
 
   return (
     <div>
       {/* Hero */}
-      <section className="bg-gradient-to-br from-purple-700 via-purple-600 to-orange-500 text-white py-24 px-4">
+      <section className="bg-gradient-to-br from-purple-700 via-fuchsia-600 to-orange-500 text-white pt-24 pb-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-4">Encuentrame</h1>
           <p className="text-xl md:text-2xl text-purple-100 mb-8">Descubre los negocios de Tierra Blanca</p>
-          <div className="flex flex-col items-center gap-3">
-            <SearchBar large />
-            <CitySearchBar cities={cities} large />
+          <div className="flex justify-center">
+            <HeroSearch cities={cities} />
           </div>
         </div>
       </section>

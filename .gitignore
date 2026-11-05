@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# agent workflow artifacts (reportes/planes de los workflows, no van al repo)
+.agents/

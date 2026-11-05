@@ -31,7 +31,9 @@ begin
     if auth.role() is distinct from 'service_role'
        and not public.is_admin() then
       -- ¿Es el dueño haciendo exactamente rejected -> pending?
-      if auth.uid() = new.owner_id
+      -- Se compara contra old.owner_id (el dueño real ya persistido), no
+      -- contra new.owner_id, para no confiar en el valor entrante del update.
+      if auth.uid() = old.owner_id
          and old.status = 'rejected'
          and new.status = 'pending' then
         -- Transición de re-solicitud permitida: no hacer nada.

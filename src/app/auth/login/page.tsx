@@ -44,7 +44,10 @@ export default function LoginPage() {
             {loading ? 'Entrando...' : 'Iniciar sesión'}
           </Button>
         </form>
-        <p className="text-sm text-center text-gray-500 mt-6">
+        <p className="text-sm text-center mt-4">
+          <Link href="/auth/recuperar" className="text-purple-700 hover:underline">¿Olvidaste tu contraseña?</Link>
+        </p>
+        <p className="text-sm text-center text-gray-500 mt-4">
           ¿No tienes cuenta? <Link href="/auth/registro" className="text-purple-700 font-medium hover:underline">Regístrate</Link>
         </p>
       </div>
