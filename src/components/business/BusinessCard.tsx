@@ -30,14 +30,14 @@ export default function BusinessCard({ business }: BusinessCardProps) {
           </div>
           {business.is_verified && (
             <div className="absolute top-3 left-3">
-              <Badge className="bg-purple-700 text-white text-xs">✓ Verificado</Badge>
+              <Badge className="bg-brand text-white text-xs">✓ Verificado</Badge>
             </div>
           )}
         </div>
         <div className="p-4">
-          <h3 className="font-semibold text-gray-900 group-hover:text-purple-700 transition-colors">{business.name}</h3>
+          <h3 className="font-semibold text-gray-900 group-hover:text-brand transition-colors">{business.name}</h3>
           {business.categories && (
-            <p className="text-xs text-orange-500 font-medium mt-0.5">{business.categories.name}</p>
+            <p className="text-xs text-brand-accent font-medium mt-0.5">{business.categories.name}</p>
           )}
           {business.address && (
             <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">

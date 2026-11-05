@@ -34,8 +34,8 @@ export default function AdminNav({ name, email }: AdminNavProps) {
             onClick={() => setOpen(false)}
             className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
               active
-                ? 'bg-purple-700 text-white'
-                : 'text-gray-300 hover:bg-purple-700 hover:text-white'
+                ? 'bg-brand text-white'
+                : 'text-gray-300 hover:bg-brand hover:text-white'
             }`}
           >
             <Icon className="w-4 h-4" />

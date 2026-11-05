@@ -140,7 +140,7 @@ export default function BusinessForm({ business, categories, readOnly = false }:
           accept="image/*"
           onChange={handleFileChange}
           disabled={isLocked}
-          className="mt-2 block w-full text-sm text-gray-600 file:mr-4 file:rounded-md file:border-0 file:bg-purple-50 file:px-3 file:py-2 file:text-sm file:font-medium file:text-purple-700 hover:file:bg-purple-100"
+          className="mt-2 block w-full text-sm text-gray-600 file:mr-4 file:rounded-md file:border-0 file:bg-purple-50 file:px-3 file:py-2 file:text-sm file:font-medium file:text-brand hover:file:bg-purple-100"
         />
         <p className="mt-1 text-xs text-gray-400">JPG o PNG, máximo 5 MB.</p>
       </div>
@@ -188,7 +188,7 @@ export default function BusinessForm({ business, categories, readOnly = false }:
           {error}
         </p>
       )}
-      <Button type="submit" className="w-full bg-purple-700 hover:bg-purple-800" disabled={loading || isLocked}>
+      <Button type="submit" className="w-full bg-brand hover:bg-brand-hover" disabled={loading || isLocked}>
         {loading ? 'Guardando...' : business ? 'Guardar cambios' : 'Registrar negocio'}
       </Button>
     </form>

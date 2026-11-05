@@ -107,7 +107,7 @@ export default async function AdminPage() {
               {stats.businessesPerCategory.map(({ category, count }) => (
                 <li key={category} className="flex items-center justify-between">
                   <span className="text-sm text-gray-700">{category}</span>
-                  <Badge className="bg-purple-100 text-purple-800">{count}</Badge>
+                  <Badge className="bg-purple-100 text-brand">{count}</Badge>
                 </li>
               ))}
             </ul>

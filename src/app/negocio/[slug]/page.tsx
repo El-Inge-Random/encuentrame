@@ -41,7 +41,7 @@ export default async function BusinessPage({ params }: BusinessPageProps) {
           <div className="flex items-start justify-between flex-wrap gap-4">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">{business.name}</h1>
-              {business.categories && <p className="text-orange-500 font-medium mt-1">{business.categories.name}</p>}
+              {business.categories && <p className="text-brand-accent font-medium mt-1">{business.categories.name}</p>}
             </div>
             {business.business_hours && <OpenBadge hours={business.business_hours} large />}
           </div>
@@ -63,7 +63,7 @@ export default async function BusinessPage({ params }: BusinessPageProps) {
 
           {business.address && (
             <p className="mt-4 text-gray-500 flex items-center gap-2 text-sm">
-              <MapPin className="w-4 h-4 text-purple-700" />{' '}
+              <MapPin className="w-4 h-4 text-brand" />{' '}
               {[business.address, business.city, business.state].filter(Boolean).join(', ')}
             </p>
           )}

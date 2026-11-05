@@ -121,7 +121,7 @@ export default function BusinessGallery({ businessId, photos }: BusinessGalleryP
             accept="image/*"
             onChange={handleFileChange}
             disabled={uploading}
-            className="block w-full text-sm text-gray-600 file:mr-4 file:rounded-md file:border-0 file:bg-purple-50 file:px-3 file:py-2 file:text-sm file:font-medium file:text-purple-700 hover:file:bg-purple-100 disabled:opacity-50"
+            className="block w-full text-sm text-gray-600 file:mr-4 file:rounded-md file:border-0 file:bg-purple-50 file:px-3 file:py-2 file:text-sm file:font-medium file:text-brand hover:file:bg-purple-100 disabled:opacity-50"
           />
           <p className="mt-1 text-xs text-gray-400">
             {uploading ? 'Subiendo...' : 'JPG o PNG, máximo 5 MB.'}

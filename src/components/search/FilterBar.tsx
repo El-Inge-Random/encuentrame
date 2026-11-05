@@ -55,7 +55,7 @@ export default function FilterBar({ categories, selectedCategory, openNow, citie
       <button
         onClick={() => updateFilter('categoria', null)}
         className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-          !selectedCategory ? 'bg-purple-700 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+          !selectedCategory ? 'bg-brand text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
         }`}
       >
         Todos
@@ -65,7 +65,7 @@ export default function FilterBar({ categories, selectedCategory, openNow, citie
           key={cat.id}
           onClick={() => updateFilter('categoria', cat.slug)}
           className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-            selectedCategory === cat.slug ? 'bg-purple-700 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            selectedCategory === cat.slug ? 'bg-brand text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
           }`}
         >
           {cat.name}
@@ -132,7 +132,7 @@ export default function FilterBar({ categories, selectedCategory, openNow, citie
       {selectedCity && (
         <button
           onClick={() => updateFilter('ciudad', null)}
-          className="flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium bg-purple-700 text-white"
+          className="flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium bg-brand text-white"
         >
           <MapPin className="w-3 h-3" /> Ciudad: {selectedCity} <X className="w-3 h-3" />
         </button>

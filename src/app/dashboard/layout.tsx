@@ -20,13 +20,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
           <p className="text-xs text-gray-500 truncate">{user.email}</p>
         </div>
         <nav className="p-4 flex flex-col gap-1 flex-1">
-          <Link href="/dashboard" className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-colors">
+          <Link href="/dashboard" className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-purple-50 hover:text-brand transition-colors">
             <LayoutDashboard className="w-4 h-4" /> Inicio
           </Link>
-          <Link href="/dashboard/negocio" className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-colors">
+          <Link href="/dashboard/negocio" className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-purple-50 hover:text-brand transition-colors">
             <Store className="w-4 h-4" /> Mi Negocio
           </Link>
-          <Link href="/dashboard/horarios" className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-colors">
+          <Link href="/dashboard/horarios" className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-purple-50 hover:text-brand transition-colors">
             <Clock className="w-4 h-4" /> Horarios
           </Link>
         </nav>

@@ -109,7 +109,7 @@ export default function HeroSearch({ cities }: HeroSearchProps) {
           <button
             type="button"
             onClick={handleSearch}
-            className="shrink-0 rounded-full bg-orange-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-orange-600"
+            className="shrink-0 rounded-full bg-brand-accent px-6 py-3 font-semibold text-white transition-colors hover:bg-brand-accent-hover"
           >
             Buscar
           </button>

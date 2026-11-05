@@ -26,8 +26,8 @@ export default function LoginPage() {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="w-full max-w-sm bg-white rounded-2xl shadow-sm p-8">
         <div className="flex items-center justify-center gap-2 mb-8">
-          <MapPin className="w-6 h-6 text-orange-500" />
-          <span className="font-bold text-xl text-purple-700">Encuentrame</span>
+          <MapPin className="w-6 h-6 text-brand-accent" />
+          <span className="font-bold text-xl text-brand">Encuentrame</span>
         </div>
         <h1 className="text-2xl font-bold text-gray-900 mb-6 text-center">Iniciar sesión</h1>
         <form action={handleSubmit} className="space-y-4">
@@ -40,15 +40,15 @@ export default function LoginPage() {
             <Input id="password" name="password" type="password" required className="mt-1" placeholder="••••••••" />
           </div>
           {error && <p className="text-sm text-red-500">{error}</p>}
-          <Button type="submit" className="w-full bg-purple-700 hover:bg-purple-800" disabled={loading}>
+          <Button type="submit" className="w-full bg-brand hover:bg-brand-hover" disabled={loading}>
             {loading ? 'Entrando...' : 'Iniciar sesión'}
           </Button>
         </form>
         <p className="text-sm text-center mt-4">
-          <Link href="/auth/recuperar" className="text-purple-700 hover:underline">¿Olvidaste tu contraseña?</Link>
+          <Link href="/auth/recuperar" className="text-brand hover:underline">¿Olvidaste tu contraseña?</Link>
         </p>
         <p className="text-sm text-center text-gray-500 mt-4">
-          ¿No tienes cuenta? <Link href="/auth/registro" className="text-purple-700 font-medium hover:underline">Regístrate</Link>
+          ¿No tienes cuenta? <Link href="/auth/registro" className="text-brand font-medium hover:underline">Regístrate</Link>
         </p>
       </div>
     </div>

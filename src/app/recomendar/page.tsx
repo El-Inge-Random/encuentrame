@@ -33,7 +33,7 @@ export default function RecomendarPage() {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-2xl mx-auto px-4 py-16">
         <div className="text-center mb-10">
-          <div className="w-14 h-14 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center mx-auto mb-4">
+          <div className="w-14 h-14 rounded-2xl bg-purple-100 text-brand flex items-center justify-center mx-auto mb-4">
             <Store className="w-7 h-7" />
           </div>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
@@ -55,7 +55,7 @@ export default function RecomendarPage() {
             </div>
             <Button
               onClick={copy}
-              className="bg-purple-700 hover:bg-purple-800 gap-2 shrink-0"
+              className="bg-brand hover:bg-brand-hover gap-2 shrink-0"
             >
               {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
               {copied ? 'Copiado' : 'Copiar enlace'}
@@ -72,7 +72,7 @@ export default function RecomendarPage() {
         </div>
 
         <p className="text-sm text-center text-gray-500 mt-8">
-          <Link href="/" className="text-purple-700 font-medium hover:underline">
+          <Link href="/" className="text-brand font-medium hover:underline">
             Volver al inicio
           </Link>
         </p>

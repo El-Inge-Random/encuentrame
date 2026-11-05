@@ -32,7 +32,7 @@ export default function SearchBar({ initialValue = '', large = false }: SearchBa
         placeholder="Busca un negocio, barbería, restaurante..."
         className={large ? 'h-12 text-base' : ''}
       />
-      <Button onClick={handleSearch} className={`bg-orange-500 hover:bg-orange-600 ${large ? 'h-12 px-6' : ''}`}>
+      <Button onClick={handleSearch} className={`bg-brand-accent hover:bg-brand-accent-hover ${large ? 'h-12 px-6' : ''}`}>
         <Search className="w-4 h-4" />
       </Button>
     </div>

@@ -11,7 +11,7 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div>
             <div className="flex items-center gap-2 text-white font-bold text-lg mb-1">
-              <MapPin className="w-5 h-5 text-orange-500" />
+              <MapPin className="w-5 h-5 text-brand-accent" />
               Encuentrame
             </div>
             <p className="text-sm">Descubre los negocios cerca de ti.</p>

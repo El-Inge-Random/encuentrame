@@ -33,7 +33,7 @@ export default function CreateCategoryForm() {
 
   if (!open) {
     return (
-      <Button onClick={() => setOpen(true)} className="bg-purple-700 hover:bg-purple-800">
+      <Button onClick={() => setOpen(true)} className="bg-brand hover:bg-brand-hover">
         + Nueva categoría
       </Button>
     )
@@ -63,7 +63,7 @@ export default function CreateCategoryForm() {
                   aria-pressed={active}
                   className={`flex items-center justify-center h-10 rounded-lg border transition-colors ${
                     active
-                      ? 'border-purple-600 bg-purple-50 text-purple-700'
+                      ? 'border-brand bg-purple-50 text-brand'
                       : 'border-gray-200 text-gray-500 hover:border-purple-300'
                   }`}
                 >
@@ -95,7 +95,7 @@ export default function CreateCategoryForm() {
         )}
 
         <div className="flex gap-2">
-          <Button type="submit" className="bg-purple-700 hover:bg-purple-800" disabled={loading}>
+          <Button type="submit" className="bg-brand hover:bg-brand-hover" disabled={loading}>
             {loading ? 'Guardando...' : 'Crear categoría'}
           </Button>
           <Button type="button" variant="outline" onClick={() => { setOpen(false); setError('') }}>

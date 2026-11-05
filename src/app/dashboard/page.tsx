@@ -24,7 +24,7 @@ export default async function DashboardPage() {
         <h1 className="text-2xl font-bold text-gray-900 mb-2">Aún no tienes un negocio registrado</h1>
         <p className="text-gray-500 mb-6">Registra tu negocio para que tus clientes puedan encontrarte.</p>
         <Link href="/dashboard/negocio">
-          <Button className="bg-purple-700 hover:bg-purple-800">Registrar mi negocio</Button>
+          <Button className="bg-brand hover:bg-brand-hover">Registrar mi negocio</Button>
         </Link>
       </div>
     )
@@ -46,7 +46,7 @@ export default async function DashboardPage() {
               <h2 className="text-xl font-semibold text-gray-900">{business.name}</h2>
               <Badge className={statusBadge.className}>{statusBadge.label}</Badge>
             </div>
-            {business.categories && <p className="text-orange-500 text-sm">{business.categories.name}</p>}
+            {business.categories && <p className="text-brand-accent text-sm">{business.categories.name}</p>}
             {business.address && <p className="text-gray-500 text-sm mt-1">{business.address}</p>}
           </div>
           {isApproved && business.business_hours && <OpenBadge hours={business.business_hours} />}

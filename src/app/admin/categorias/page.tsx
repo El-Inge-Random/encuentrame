@@ -48,7 +48,7 @@ export default async function AdminCategoriasPage() {
                     <p className="text-xs text-gray-400 truncate">{cat.icon}</p>
                   )}
                 </div>
-                <Badge className="bg-purple-100 text-purple-800 flex-shrink-0">
+                <Badge className="bg-purple-100 text-brand flex-shrink-0">
                   {cat.count} negocio{cat.count !== 1 ? 's' : ''}
                 </Badge>
               </div>

@@ -118,7 +118,7 @@ export default function HorariosPage() {
           ))}
         </div>
         {message && <p className={`mt-4 text-sm ${message.startsWith('Error') ? 'text-red-500' : 'text-green-600'}`}>{message}</p>}
-        <Button onClick={handleSave} disabled={saving} className="mt-6 w-full bg-purple-700 hover:bg-purple-800">
+        <Button onClick={handleSave} disabled={saving} className="mt-6 w-full bg-brand hover:bg-brand-hover">
           {saving ? 'Guardando...' : 'Guardar horarios'}
         </Button>
       </div>

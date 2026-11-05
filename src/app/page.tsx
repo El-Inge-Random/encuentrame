@@ -18,7 +18,7 @@ export default async function HomePage() {
   return (
     <div>
       {/* Hero */}
-      <section className="bg-gradient-to-br from-purple-700 via-fuchsia-600 to-orange-500 text-white pt-24 pb-20 px-4">
+      <section className="bg-gradient-to-br from-brand via-brand-mid to-brand-accent text-white pt-24 pb-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-4">Encuentrame</h1>
           <p className="text-xl md:text-2xl text-purple-100 mb-8">Descubre los negocios cerca de ti</p>
@@ -44,7 +44,7 @@ export default async function HomePage() {
               >
                 {cat.icon && <CategoryIcon name={cat.icon} />}
               </div>
-              <span className="text-sm font-medium text-gray-700 group-hover:text-purple-700 transition-colors">{cat.name}</span>
+              <span className="text-sm font-medium text-gray-700 group-hover:text-brand transition-colors">{cat.name}</span>
             </Link>
           ))}
         </div>
@@ -57,7 +57,7 @@ export default async function HomePage() {
       <section className="max-w-6xl mx-auto px-4 py-20">
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-2xl font-bold text-gray-900">Negocios registrados</h2>
-          <Link href="/buscar" className="text-sm text-purple-700 hover:underline font-medium">Ver todos →</Link>
+          <Link href="/buscar" className="text-sm text-brand hover:underline font-medium">Ver todos →</Link>
         </div>
         <BusinessGrid businesses={recentBusinesses.slice(0, 6)} />
       </section>

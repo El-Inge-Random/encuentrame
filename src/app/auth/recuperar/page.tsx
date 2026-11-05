@@ -29,8 +29,8 @@ export default function RecoverPage() {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="w-full max-w-sm bg-white rounded-2xl shadow-sm p-8">
         <div className="flex items-center justify-center gap-2 mb-8">
-          <MapPin className="w-6 h-6 text-orange-500" />
-          <span className="font-bold text-xl text-purple-700">Encuentrame</span>
+          <MapPin className="w-6 h-6 text-brand-accent" />
+          <span className="font-bold text-xl text-brand">Encuentrame</span>
         </div>
         <h1 className="text-2xl font-bold text-gray-900 mb-2 text-center">Recuperar contraseña</h1>
         <p className="text-sm text-gray-500 text-center mb-6">
@@ -43,7 +43,7 @@ export default function RecoverPage() {
               Si existe una cuenta con ese correo, recibirás un enlace para
               restablecer tu contraseña. Revisa tu bandeja de entrada y spam.
             </p>
-            <Link href="/auth/login" className="text-sm text-purple-700 font-medium hover:underline inline-block">
+            <Link href="/auth/login" className="text-sm text-brand font-medium hover:underline inline-block">
               Volver a iniciar sesión
             </Link>
           </div>
@@ -55,12 +55,12 @@ export default function RecoverPage() {
                 <Input id="email" name="email" type="email" required className="mt-1" placeholder="tu@correo.com" />
               </div>
               {error && <p className="text-sm text-red-500">{error}</p>}
-              <Button type="submit" className="w-full bg-purple-700 hover:bg-purple-800" disabled={loading}>
+              <Button type="submit" className="w-full bg-brand hover:bg-brand-hover" disabled={loading}>
                 {loading ? 'Enviando...' : 'Enviar enlace'}
               </Button>
             </form>
             <p className="text-sm text-center text-gray-500 mt-6">
-              <Link href="/auth/login" className="text-purple-700 font-medium hover:underline">Volver a iniciar sesión</Link>
+              <Link href="/auth/login" className="text-brand font-medium hover:underline">Volver a iniciar sesión</Link>
             </p>
           </>
         )}

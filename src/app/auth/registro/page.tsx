@@ -31,8 +31,8 @@ export default function RegisterPage() {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="w-full max-w-sm bg-white rounded-2xl shadow-sm p-8">
         <div className="flex items-center justify-center gap-2 mb-8">
-          <MapPin className="w-6 h-6 text-orange-500" />
-          <span className="font-bold text-xl text-purple-700">Encuentrame</span>
+          <MapPin className="w-6 h-6 text-brand-accent" />
+          <span className="font-bold text-xl text-brand">Encuentrame</span>
         </div>
         <h1 className="text-2xl font-bold text-gray-900 mb-6 text-center">Crear cuenta</h1>
         <form action={handleSubmit} className="space-y-4">
@@ -55,7 +55,7 @@ export default function RegisterPage() {
                 type="button"
                 onClick={() => setRole('user')}
                 className={`py-2 rounded-lg border text-sm font-medium transition-colors ${
-                  role === 'user' ? 'bg-purple-700 text-white border-purple-700' : 'border-gray-200 text-gray-600 hover:border-purple-300'
+                  role === 'user' ? 'bg-brand text-white border-brand' : 'border-gray-200 text-gray-600 hover:border-purple-300'
                 }`}
               >
                 Usuario
@@ -64,7 +64,7 @@ export default function RegisterPage() {
                 type="button"
                 onClick={() => setRole('owner')}
                 className={`py-2 rounded-lg border text-sm font-medium transition-colors ${
-                  role === 'owner' ? 'bg-purple-700 text-white border-purple-700' : 'border-gray-200 text-gray-600 hover:border-purple-300'
+                  role === 'owner' ? 'bg-brand text-white border-brand' : 'border-gray-200 text-gray-600 hover:border-purple-300'
                 }`}
               >
                 Dueño de negocio
@@ -72,12 +72,12 @@ export default function RegisterPage() {
             </div>
           </div>
           {error && <p className="text-sm text-red-500">{error}</p>}
-          <Button type="submit" className="w-full bg-purple-700 hover:bg-purple-800" disabled={loading}>
+          <Button type="submit" className="w-full bg-brand hover:bg-brand-hover" disabled={loading}>
             {loading ? 'Creando cuenta...' : 'Crear cuenta'}
           </Button>
         </form>
         <p className="text-sm text-center text-gray-500 mt-6">
-          ¿Ya tienes cuenta? <Link href="/auth/login" className="text-purple-700 font-medium hover:underline">Inicia sesión</Link>
+          ¿Ya tienes cuenta? <Link href="/auth/login" className="text-brand font-medium hover:underline">Inicia sesión</Link>
         </p>
       </div>
     </div>

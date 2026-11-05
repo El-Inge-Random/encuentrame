@@ -31,7 +31,7 @@ export default function ResubmitButton() {
         type="button"
         onClick={handleClick}
         disabled={loading}
-        className="gap-2 bg-purple-700 hover:bg-purple-800"
+        className="gap-2 bg-brand hover:bg-brand-hover"
       >
         <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
         {loading ? 'Enviando...' : 'Volver a solicitar aprobación'}
