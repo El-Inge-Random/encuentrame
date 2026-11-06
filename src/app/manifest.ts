@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: 'Descubre y encuentra los negocios locales cerca de ti.',
     start_url: '/',
     display: 'standalone',
-    background_color: '#7C3AED',
-    theme_color: '#7C3AED',
+    background_color: '#1F3A5F',
+    theme_color: '#1F3A5F',
     orientation: 'portrait',
     icons: [
       {

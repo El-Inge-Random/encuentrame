@@ -64,7 +64,7 @@ export default function InstallPrompt() {
   return (
     <div className="fixed inset-x-3 bottom-3 z-50 mx-auto max-w-md rounded-2xl bg-white shadow-lg ring-1 ring-black/5 p-4">
       <div className="flex items-start gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-purple-700 to-orange-500 text-white">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand text-white">
           <Download className="h-5 w-5" />
         </div>
         <div className="min-w-0 flex-1">
