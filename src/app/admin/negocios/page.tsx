@@ -18,9 +18,9 @@ const STATUS_BADGE: Record<
   BusinessWithOwner['status'],
   { label: string; className: string }
 > = {
-  pending: { label: 'En revisión', className: 'bg-yellow-100 text-yellow-800' },
-  approved: { label: 'Aprobado', className: 'bg-green-100 text-green-800' },
-  rejected: { label: 'Rechazado', className: 'bg-red-100 text-red-800' },
+  pending:  { label: 'En revisión', className: 'bg-yellow-100 text-yellow-800' },
+  approved: { label: 'Aprobado',    className: 'bg-green-100 text-green-800' },
+  rejected: { label: 'Rechazado',   className: 'bg-red-100 text-red-800' },
 }
 
 export const dynamic = 'force-dynamic'
@@ -100,9 +100,9 @@ export default async function AdminNegociosPage() {
                       </td>
                       <td className="px-4 py-3">
                         {biz.is_active ? (
-                          <Badge className="bg-green-100 text-green-800">Activo</Badge>
+                          <Badge className="bg-status-open text-status-open-fg">Activo</Badge>
                         ) : (
-                          <Badge className="bg-red-100 text-red-800">Inactivo</Badge>
+                          <Badge className="bg-status-closed text-status-closed-fg">Inactivo</Badge>
                         )}
                       </td>
                       <td className="px-4 py-3">

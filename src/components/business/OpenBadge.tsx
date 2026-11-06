@@ -11,13 +11,18 @@ interface OpenBadgeProps {
 
 export default function OpenBadge({ hours, large = false }: OpenBadgeProps) {
   const isOpen = isBusinessOpen(hours)
-  const classes = large
-    ? (isOpen ? 'bg-green-500 text-white text-base px-4 py-1' : 'bg-red-500 text-white text-base px-4 py-1')
-    : (isOpen ? 'bg-green-500 text-white' : 'bg-red-500 text-white')
+
+  const baseClass = large ? 'text-base px-4 py-1' : ''
+  // Abierto = verde, Cerrado = gris (no rojo — cerrado no es un error).
+  const colorClass = isOpen
+    ? 'bg-status-open text-status-open-fg'
+    : 'bg-status-closed text-status-closed-fg'
 
   return (
-    <Badge className={classes}>
-      {large ? (isOpen ? '● Abierto ahora' : '● Cerrado') : (isOpen ? 'Abierto' : 'Cerrado')}
+    <Badge className={`${colorClass} ${baseClass}`}>
+      {large
+        ? (isOpen ? '● Abierto ahora' : '● Cerrado')
+        : (isOpen ? 'Abierto' : 'Cerrado')}
     </Badge>
   )
 }

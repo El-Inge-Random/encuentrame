@@ -74,7 +74,7 @@ export default function FilterBar({ categories, selectedCategory, openNow, citie
       <button
         onClick={() => updateFilter('abierto', openNow ? null : '1')}
         className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-          openNow ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+          openNow ? 'bg-status-open text-status-open-fg' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
         }`}
       >
         <Clock className="w-3 h-3" /> Abierto ahora

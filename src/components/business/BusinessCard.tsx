@@ -24,13 +24,15 @@ export default function BusinessCard({ business }: BusinessCardProps) {
             <div className="w-full h-full flex items-center justify-center text-5xl text-gray-300">🏪</div>
           )}
           <div className="absolute top-3 right-3">
-            <Badge className={open ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}>
+            <Badge className={open
+              ? 'bg-status-open text-status-open-fg'
+              : 'bg-status-closed text-status-closed-fg'}>
               {open ? 'Abierto' : 'Cerrado'}
             </Badge>
           </div>
           {business.is_verified && (
             <div className="absolute top-3 left-3">
-              <Badge className="bg-brand text-white text-xs">✓ Verificado</Badge>
+              <Badge className="bg-status-verified text-status-verified-fg text-xs">✓ Verificado</Badge>
             </div>
           )}
         </div>

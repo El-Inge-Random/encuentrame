@@ -7,9 +7,9 @@ import OpenBadge from '@/components/business/OpenBadge'
 import ResubmitButton from '@/components/business/ResubmitButton'
 
 const STATUS_BADGE = {
-  pending: { label: 'En revisión', className: 'bg-yellow-100 text-yellow-800' },
-  approved: { label: 'Aprobado', className: 'bg-green-100 text-green-800' },
-  rejected: { label: 'Rechazado', className: 'bg-red-100 text-red-800' },
+  pending:  { label: 'En revisión', className: 'bg-yellow-100 text-yellow-800' },
+  approved: { label: 'Aprobado',    className: 'bg-green-100 text-green-800' },
+  rejected: { label: 'Rechazado',   className: 'bg-red-100 text-red-800' },
 } as const
 
 export const dynamic = 'force-dynamic'
