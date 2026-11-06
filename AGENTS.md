@@ -207,7 +207,7 @@ Auditoría completa en `.agents/tasks/prod-readiness-report.md`. Estado: código
 - [x] **B1 BLOQUEANTE** escalada a admin vía INSERT → corregido en `fix_role_escalation_insert.sql` (CORRER en Supabase). Verificar que el único admin sea el esperado: `select id, full_name, role from profiles where role='admin';`
 - [x] **I1** `.env.local.example` corregido al nombre `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
 - [x] **I3** Storage acotado a la carpeta del dueño → `storage_scope_folder.sql` (CORRER en Supabase).
-- [ ] **I2** En el hosting (Vercel): definir `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` y (recomendado) `NEXT_PUBLIC_SITE_URL`. En Supabase → Auth → URL Configuration → Redirect URLs: agregar `https://<dominio-prod>/auth/callback`.
+- [x] **I2 (parcial)** Supabase → Auth → URL Configuration: **Site URL** apuntando al dominio de Vercel (NO localhost) + Redirect URLs con `https://<dominio-prod>/auth/callback` y `http://localhost:3000/auth/callback`. RESUELTO el bug de que el link de recuperación de contraseña llevaba a localhost (la causa era el Site URL por defecto = localhost). Falta aún definir `NEXT_PUBLIC_SITE_URL` en Vercel como refuerzo opcional.
 - [ ] **I2** SMTP propio en Supabase (el integrado es limitado, no apto para prod).
 - [ ] **I4** Decidir política de confirmación de email. Si se EXIGE confirmación, ajustar `signUp` para mostrar "revisa tu correo" en vez de redirigir a /dashboard (hoy rebota a login sin aviso). Si NO se exige, el flujo actual funciona.
 - [ ] **M1** (no urgente) migrar `middleware.ts`→`proxy.ts` (`npx @next/codemod@canary middleware-to-proxy .`) en una rama; el warning no bloquea.
@@ -216,8 +216,8 @@ Auditoría completa en `.agents/tasks/prod-readiness-report.md`. Estado: código
 
 ## Pendientes / trabajo en progreso
 1. **Objetos huérfanos en Storage** — al borrar/reemplazar portada o foto de galería, el archivo viejo queda en el bucket `business-images`. Se podría borrar también del storage.
-2. **Definir paleta de colores oficial** — DECISIÓN PENDIENTE con el usuario. Hoy se usa morado (#7C3AED / purple-700) + naranja (#F97316 / orange-500) + fuchsia como intermedio en degradados. Falta definir una paleta formal (primarios, secundarios, estados) y aplicarla de forma consistente. Afecta: landing, navbar, botones, badges, PWA (theme_color/background_color del manifest e íconos). Al definirla, revisar también los tokens de `globals.css`.
-3. **PWA (en progreso)** — convertir la app en instalable (manifest, íconos, service worker). Se arranca con el estilo actual (degradado morado-naranja + pin). Si la paleta cambia (punto 2), regenerar íconos y theme colors.
+2. **Definir paleta de colores oficial** ✅ HECHO — Azul profundo (#1F3A5F) + Ámbar (#F2B640). Tokens de marca en `globals.css` (`:root --brand-*`). Hero y CTA en color sólido (sin degradado). Para cambiar la paleta: editar los 7 valores `--brand-*` en `:root`. Colores funcionales (abierto/cerrado/verificado) PENDIENTES de tokenizar (hoy hardcodeados en los componentes).
+3. **PWA (en progreso)** — convertida en instalable (manifest, íconos, service worker, banner InstallPrompt). Íconos generados con paleta anterior (morado). Pendiente: regenerar íconos con la paleta definitiva (azul profundo #1F3A5F) y actualizar `theme_color` en `manifest.ts`.
 
 (Descartados por decisión del usuario: preview embebido del perfil en el dashboard —ya hay botón "Ver perfil público"—, y recorte automático de imágenes.)
 

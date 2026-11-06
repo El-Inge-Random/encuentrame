@@ -50,13 +50,13 @@ export default function AboutSection() {
         </div>
 
         {/* Llamado a la acción: recomendar un negocio */}
-        <div className="mt-12 rounded-2xl bg-gradient-to-br from-brand to-brand-accent p-8 text-center text-white">
+        <div className="mt-12 rounded-2xl bg-brand p-8 text-center text-white">
           <h3 className="text-xl md:text-2xl font-bold mb-2">¿Conoces un negocio que debería estar aquí?</h3>
-          <p className="text-purple-100 mb-6 max-w-xl mx-auto">
+          <p className="text-white/80 mb-6 max-w-xl mx-auto">
             Compártele el enlace a su dueño para que lo registre y aparezca en Encuentrame.
           </p>
           <Link href="/recomendar">
-            <Button className="gap-2 bg-white text-brand hover:bg-purple-50">
+            <Button className="gap-2 bg-white text-brand hover:bg-white/90">
               <Share2 className="w-4 h-4" /> Recomendar un negocio
             </Button>
           </Link>

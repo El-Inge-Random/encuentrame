@@ -6,6 +6,7 @@ import NavbarServer from '@/components/layout/NavbarServer'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import ServiceWorkerRegister from '@/components/layout/ServiceWorkerRegister'
+import InstallPrompt from '@/components/layout/InstallPrompt'
 import { Toaster } from '@/components/ui/toaster'
 
 export const dynamic = 'force-dynamic'
@@ -48,6 +49,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Footer />
         <Toaster />
         <ServiceWorkerRegister />
+        <InstallPrompt />
       </body>
     </html>
   )
