@@ -19,9 +19,9 @@ export default async function BusinessPage({ params }: BusinessPageProps) {
   if (!business) notFound()
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-50">
       <div className="max-w-4xl mx-auto px-4 pt-6">
-        <div className="relative h-56 md:h-64 w-full overflow-hidden rounded-2xl bg-gradient-to-br from-purple-100 to-orange-100">
+        <div className="relative h-56 md:h-64 w-full overflow-hidden rounded-2xl bg-gray-100">
           {business.cover_image ? (
             <Image
               src={business.cover_image}

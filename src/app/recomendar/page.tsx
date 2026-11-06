@@ -30,7 +30,7 @@ export default function RecomendarPage() {
   const whatsappUrl = `https://wa.me/?text=${whatsappMessage}`
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-50">
       <div className="max-w-2xl mx-auto px-4 py-16">
         <div className="text-center mb-10">
           <div className="w-14 h-14 rounded-2xl bg-purple-100 text-brand flex items-center justify-center mx-auto mb-4">

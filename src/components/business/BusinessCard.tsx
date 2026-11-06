@@ -17,7 +17,7 @@ export default function BusinessCard({ business }: BusinessCardProps) {
   return (
     <Link href={`/negocio/${business.slug}`} className="group block">
       <div className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden border border-gray-100">
-        <div className="relative h-44 bg-gradient-to-br from-purple-100 to-orange-100">
+        <div className="relative h-44 bg-gray-100">
           {business.cover_image ? (
             <Image src={business.cover_image} alt={business.name} fill className="object-cover" />
           ) : (
