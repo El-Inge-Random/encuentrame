@@ -3,8 +3,8 @@ import { Skeleton, BusinessGridSkeleton } from '@/components/ui/skeleton'
 export default function LandingLoading() {
   return (
     <div>
-      {/* Hero (fondo gris neutro, sin color de marca) */}
-      <section className="bg-slate-100 pt-24 pb-20 px-4">
+      {/* Hero (fondo de marca tenue: bg-brand/10 evita el flash gris→azul al resolver) */}
+      <section className="bg-brand/10 pt-24 pb-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <Skeleton className="h-12 w-64 mx-auto" />
           <Skeleton className="h-6 w-80 mx-auto mb-8 mt-4" />
@@ -28,11 +28,46 @@ export default function LandingLoading() {
         </div>
       </section>
 
-      {/* ¿Qué es Encuentrame? (mismo bloque que AboutSection) */}
+      {/* ¿Qué es Encuentrame? — mismo bloque y altura que AboutSection
+          (encabezado + párrafo, 3 pasos en cuadrícula y tarjeta CTA)
+          para que "Negocios recientes" no salte al resolver la página */}
       <section className="bg-white border-y border-gray-100">
         <div className="max-w-6xl mx-auto px-4 py-16">
-          <Skeleton className="h-8 w-72 mx-auto mb-6" />
-          <Skeleton className="h-4 w-full max-w-2xl mx-auto" />
+          {/* Encabezado + párrafo centrado (mb-12, igual que el real) */}
+          <div className="max-w-2xl mx-auto text-center mb-12">
+            <Skeleton className="h-8 w-72 mx-auto mb-3" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-5/6 mx-auto" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-4/5 mx-auto" />
+              <Skeleton className="h-4 w-3/4 mx-auto" />
+              <Skeleton className="h-4 w-1/2 mx-auto" />
+            </div>
+          </div>
+
+          {/* 3 pasos en cuadrícula (grid-cols-1 md:grid-cols-3 gap-8 como el real) */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="text-center">
+                <Skeleton className="w-14 h-14 rounded-2xl mx-auto mb-4" />
+                <Skeleton className="h-5 w-28 mx-auto mb-2" />
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-5/6 mx-auto" />
+                  <Skeleton className="h-4 w-2/3 mx-auto" />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Tarjeta CTA (mt-12 + p-8; en gris, sin color de marca — la real es bg-brand) */}
+          <div className="mt-12 rounded-2xl bg-slate-100 p-8 text-center">
+            <Skeleton className="h-7 w-72 mx-auto mb-2" />
+            <Skeleton className="h-4 w-80 mx-auto mb-2" />
+            <Skeleton className="h-4 w-64 mx-auto mb-6" />
+            <Skeleton className="h-10 w-48 mx-auto rounded-lg" />
+          </div>
         </div>
       </section>
 

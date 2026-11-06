@@ -26,6 +26,19 @@ export default function NegocioLoading() {
           </div>
           <Skeleton className="h-4 w-2/3 mt-4" />
         </div>
+
+        {/* Horarios (tarjeta común en negocios aprobados) */}
+        <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
+          <Skeleton className="h-6 w-40 mb-4" />
+          <div className="space-y-2">
+            {Array.from({ length: 7 }).map((_, i) => (
+              <div key={i} className="flex justify-between">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-4 w-20" />
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   )
